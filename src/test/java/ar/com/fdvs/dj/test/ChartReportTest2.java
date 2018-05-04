@@ -31,7 +31,6 @@ package ar.com.fdvs.dj.test;
 
 import java.awt.Color;
 
-import net.sf.jasperreports.view.JasperViewer;
 import ar.com.fdvs.dj.domain.DJCalculation;
 import ar.com.fdvs.dj.domain.DJChart;
 import ar.com.fdvs.dj.domain.DJChartOptions;
@@ -50,6 +49,8 @@ import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 import ar.com.fdvs.dj.domain.entities.DJGroup;
 import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
 import ar.com.fdvs.dj.domain.entities.columns.PropertyColumn;
+import net.sf.jasperreports.charts.JRPieDataset;
+import net.sf.jasperreports.view.JasperViewer;
 
 public class ChartReportTest2 extends BaseDjReportTest {
 
@@ -64,18 +65,18 @@ public class ChartReportTest2 extends BaseDjReportTest {
 		headerStyle.setHorizontalAlign(HorizontalAlign.CENTER);
 		headerStyle.setVerticalAlign(VerticalAlign.MIDDLE);
 		headerStyle.setTransparency(Transparency.OPAQUE);
-		
+
 		Style g2Variables = new Style();
 		g2Variables.setFont(Font.ARIAL_MEDIUM_BOLD);
 //		headerVariables.setBorderBottom(Border.THIN());
 		g2Variables.setHorizontalAlign(HorizontalAlign.RIGHT);
 		g2Variables.setVerticalAlign(VerticalAlign.MIDDLE);
-		
+
 		Style g1Variables = new Style();
 		g1Variables.setFont(Font.ARIAL_MEDIUM_BOLD);
 		g1Variables.setTextColor(Color.red);
 		g1Variables.setHorizontalAlign(HorizontalAlign.RIGHT);
-		g1Variables.setVerticalAlign(VerticalAlign.MIDDLE);				
+		g1Variables.setVerticalAlign(VerticalAlign.MIDDLE);
 
 		Style titleStyle = new Style();
 		titleStyle.setFont(new Font(18, Font._FONT_VERDANA, true));
@@ -89,6 +90,7 @@ public class ChartReportTest2 extends BaseDjReportTest {
 		DynamicReportBuilder drb = new DynamicReportBuilder();
 		int margin = 20;
 		drb
+                .setProperty(JRPieDataset.PROPERTY_IGNORE_DUPLICATED_KEY, "true")
 				.setTitleStyle(titleStyle)
 				.setTitle("November " + getYear() +" sales report")					//defines the title of the report
 				.setSubtitle("The items in this report correspond "
@@ -98,7 +100,7 @@ public class ChartReportTest2 extends BaseDjReportTest {
 //				.setPrintBackgroundOnOddRows(true)
 				.setPrintColumnNames(false)
 				.setOddRowBackgroundStyle(oddRowStyle);
-		
+
 		AbstractColumn columnState = ColumnBuilder.getNew()
 				.setColumnProperty("state", String.class.getName()).setTitle(
 						"State").setWidth(new Integer(85))
@@ -134,7 +136,7 @@ public class ChartReportTest2 extends BaseDjReportTest {
 						"Amount").setWidth(new Integer(90))
 				.setPattern("$ 0.00").setStyle(importeStyle).setHeaderStyle(
 						headerStyle).build();
-		
+
 		drb.addGlobalFooterVariable(columnAmount,DJCalculation.SUM,g1Variables);
 		drb.addGlobalFooterVariable(columnaQuantity,DJCalculation.SUM,g1Variables);
 
@@ -143,14 +145,14 @@ public class ChartReportTest2 extends BaseDjReportTest {
 //		 define the criteria column to group by (columnState)
 		DJGroup g1 = gb1.setCriteriaColumn((PropertyColumn) columnState)
 					.addFooterVariable(columnAmount,DJCalculation.SUM,g1Variables)
-				.addFooterVariable(columnaQuantity,DJCalculation.SUM,g1Variables) 
-				.setGroupLayout(GroupLayout.VALUE_IN_HEADER_WITH_HEADERS) 
+				.addFooterVariable(columnaQuantity,DJCalculation.SUM,g1Variables)
+				.setGroupLayout(GroupLayout.VALUE_IN_HEADER_WITH_HEADERS)
 				.build();
 
 
-		GroupBuilder gb2 = new GroupBuilder(); 
-		DJGroup g2 = gb2.setCriteriaColumn((PropertyColumn) columnBranch) 
-				.addFooterVariable(columnAmount,DJCalculation.SUM,g2Variables) 
+		GroupBuilder gb2 = new GroupBuilder();
+		DJGroup g2 = gb2.setCriteriaColumn((PropertyColumn) columnBranch)
+				.addFooterVariable(columnAmount,DJCalculation.SUM,g2Variables)
 				.addFooterVariable(columnaQuantity,DJCalculation.SUM,g2Variables)
 				.build();
 
@@ -180,7 +182,7 @@ public class ChartReportTest2 extends BaseDjReportTest {
 						.build();
 
 		drb.addChart(chart); //add chart
-		
+
 		//2nd chart
 		cb = new DJChartBuilder();
 		chart =  cb.addType(DJChart.BAR_CHART)
@@ -192,7 +194,7 @@ public class ChartReportTest2 extends BaseDjReportTest {
 			.setPosition(DJChartOptions.POSITION_HEADER)
 			.setShowLabels(true)
 			.build();
-		
+
 		drb.addChart(chart); //add chart
 
 		//3rd Chart
@@ -201,10 +203,10 @@ public class ChartReportTest2 extends BaseDjReportTest {
 		.addOperation(DJChart.CALCULATION_SUM)
 		.addColumnsGroup(g2)
 		.addColumn(columnaQuantity)
-		.setHeight(chartHeight)		
+		.setHeight(chartHeight)
 		.setPosition(DJChartOptions.POSITION_HEADER)
 		.build();
-		
+
 		drb.addChart(chart); //add chart
 
 		DynamicReport dr = drb.build();

@@ -29,10 +29,18 @@
 
 package ar.com.fdvs.dj.util;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.Collection;
+
 import ar.com.fdvs.dj.core.DJConstants;
 import ar.com.fdvs.dj.core.DJDefaultScriptlet;
 import ar.com.fdvs.dj.core.DJException;
-import ar.com.fdvs.dj.domain.*;
+import ar.com.fdvs.dj.domain.ColumnProperty;
+import ar.com.fdvs.dj.domain.CustomExpression;
+import ar.com.fdvs.dj.domain.DJCalculation;
+import ar.com.fdvs.dj.domain.DJDataSource;
+import ar.com.fdvs.dj.domain.DynamicJasperDesign;
 import ar.com.fdvs.dj.domain.customexpression.DJSimpleExpression;
 import ar.com.fdvs.dj.domain.entities.Subreport;
 import ar.com.fdvs.dj.domain.entities.SubreportParameter;
@@ -48,10 +56,6 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.engine.design.JRDesignParameter;
 import net.sf.jasperreports.engine.design.JasperDesign;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.util.Collection;
 
 public class ExpressionUtils {
 
@@ -111,8 +115,7 @@ public class ExpressionUtils {
         } else if (ds.getDataSourceOrigin() == DJConstants.DATA_SOURCE_TYPE_SQL_CONNECTION) {
             expText = dsType + REPORT_PARAMETERS_MAP + ".get( \"" + ds.getDataSourceExpression() + "\" ) )";
         } else if (ds.getDataSourceOrigin() == DJConstants.DATA_SOURCE_ORIGIN_REPORT_DATASOURCE) {
-
-            expText = "((" + JRDataSource.class.getName() + ")" + REPORT_PARAMETERS_MAP + ".get( \"REPORT_DATA_SOURCE\" ) )";
+            expText = "((" + JRDataSource.class.getName() + ") $P{REPORT_DATA_SOURCE})";
         }
 
         exp.setText(expText);
