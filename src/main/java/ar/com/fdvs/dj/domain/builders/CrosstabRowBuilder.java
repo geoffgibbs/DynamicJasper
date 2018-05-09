@@ -32,6 +32,7 @@ package ar.com.fdvs.dj.domain.builders;
 import ar.com.fdvs.dj.domain.ColumnProperty;
 import ar.com.fdvs.dj.domain.DJCrosstabRow;
 import ar.com.fdvs.dj.domain.Style;
+import net.sf.jasperreports.engine.analytics.dataset.BucketOrder;
 
 public class CrosstabRowBuilder {
 
@@ -92,5 +93,15 @@ public class CrosstabRowBuilder {
 		row.setHeaderStyle(style);
 		return this;
 	}
+
+    public CrosstabRowBuilder setOrderBy(String orderByField, Class<?> orderByType) {
+        row.setOrderByProperty(new ColumnProperty(orderByField, orderByType));
+        return this;
+    }
+
+    public CrosstabRowBuilder setOrder(BucketOrder order) {
+        row.setOrder(order);
+        return this;
+    }
 
 }
