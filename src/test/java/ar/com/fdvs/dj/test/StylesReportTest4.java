@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -32,6 +32,7 @@ package ar.com.fdvs.dj.test;
 import java.awt.Color;
 
 import net.sf.jasperreports.view.JasperViewer;
+
 import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
@@ -45,8 +46,8 @@ import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
 import ar.com.fdvs.dj.domain.entities.columns.PropertyColumn;
 
 /**
- * This test aims to generate a report with almost no styles, ensuring that there are no errors
- * as result of the lack of style or fonts.
+ * This test aims to generate a report with almost no styles, ensuring that
+ * there are no errors as result of the lack of style or fonts.
  * 
  * See bug 2817859 at SF
  * 
@@ -55,60 +56,51 @@ import ar.com.fdvs.dj.domain.entities.columns.PropertyColumn;
  */
 public class StylesReportTest4 extends BaseDjReportTest {
 
-	public DynamicReport buildReport() throws Exception {
-		
-		DynamicReportBuilder drb = new DynamicReportBuilder();
-		Integer margin = 20;
-		drb.setTitle("November " + getYear() +" sales report")					//defines the title of the report
-			.setSubtitle("The items in this report correspond "
-					+"to the main products: DVDs, Books, Foods and Magazines")
-			.setTitleHeight(30)
-			.setSubtitleHeight(20)
-			.setDetailHeight(15)
-			.setLeftMargin(margin)
-			.setRightMargin(margin)
-			.setTopMargin(margin)
-			.setBottomMargin(margin)
-			.setColumnsPerPage(1)
-			.setColumnSpace(5);
+    public static void main(String[] args) throws Exception {
+        StylesReportTest4 test = new StylesReportTest4();
+        test.testReport();
+        JasperViewer.viewReport(test.jp);
+    }
 
-		Style style1 = new Style("style1");
-		style1.setFont(Font.ARIAL_MEDIUM_BOLD);
-		style1.setHorizontalAlign(HorizontalAlign.CENTER);
-		drb.addStyle(style1);
+    @Override
+    public DynamicReport buildReport() throws Exception {
 
-		Style style2 = Style.createBlankStyle("style2", "style1");
-		style2.setTextColor(Color.BLUE);
-		drb.addStyle(style2);
-		
-		AbstractColumn columnState = ColumnBuilder.getNew().setColumnProperty("state", String.class.getName())
-			.setTitle("State").setWidth(new Integer(85))
-			.setStyle(style1).build();
+        DynamicReportBuilder drb = new DynamicReportBuilder();
+        Integer margin = 20;
+        drb.setTitle("November " + getYear() + " sales report") // defines the title of the report
+                .setSubtitle("The items in this report correspond "
+                        + "to the main products: DVDs, Books, Foods and Magazines")
+                .setTitleHeight(30).setSubtitleHeight(20).setDetailHeight(15).setLeftMargin(margin)
+                .setRightMargin(margin).setTopMargin(margin).setBottomMargin(margin).setColumnsPerPage(1)
+                .setColumnSpace(5);
 
-		AbstractColumn columnBranch = ColumnBuilder.getNew().setColumnProperty("branch", String.class.getName())
-			.setTitle("Branch").setWidth(new Integer(85))
-			.setStyle(style2).build();
+        Style style1 = new Style("style1");
+        style1.setFont(Font.ARIAL_MEDIUM_BOLD);
+        style1.setHorizontalAlign(HorizontalAlign.CENTER);
+        drb.addStyle(style1);
 
-		drb.addColumn(columnBranch);
-		drb.addColumn(columnState);		
+        Style style2 = Style.createBlankStyle("style2", "style1");
+        style2.setTextColor(Color.BLUE);
+        drb.addStyle(style2);
 
-		DJGroup g1 = new GroupBuilder()
-		.setCriteriaColumn((PropertyColumn) columnBranch)
+        AbstractColumn columnState = ColumnBuilder.getNew().setColumnProperty("state", String.class.getName())
+                .setTitle("State").setWidth(new Integer(85)).setStyle(style1).build();
 
-		.setGroupLayout(GroupLayout.VALUE_IN_HEADER_WITH_HEADERS_AND_COLUMN_NAME)
-		.build();
-		drb.addGroup(g1);
-		
-		drb.setUseFullPageWidth(true);
+        AbstractColumn columnBranch = ColumnBuilder.getNew().setColumnProperty("branch", String.class.getName())
+                .setTitle("Branch").setWidth(new Integer(85)).setStyle(style2).build();
 
-		DynamicReport dr = drb.build();
-		return dr;
-	}
+        drb.addColumn(columnBranch);
+        drb.addColumn(columnState);
 
-	public static void main(String[] args) throws Exception {
-		StylesReportTest4 test = new StylesReportTest4();
-		test.testReport();
-		JasperViewer.viewReport(test.jp);
-	}
+        DJGroup g1 = new GroupBuilder().setCriteriaColumn((PropertyColumn) columnBranch)
+
+                .setGroupLayout(GroupLayout.VALUE_IN_HEADER_WITH_HEADERS_AND_COLUMN_NAME).build();
+        drb.addGroup(g1);
+
+        drb.setUseFullPageWidth(true);
+
+        DynamicReport dr = drb.build();
+        return dr;
+    }
 
 }

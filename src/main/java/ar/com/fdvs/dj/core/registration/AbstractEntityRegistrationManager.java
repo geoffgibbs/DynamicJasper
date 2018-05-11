@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,19 +15,27 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.core.registration;
+
+import java.util.Collection;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
 
 import ar.com.fdvs.dj.core.DJConstants;
 import ar.com.fdvs.dj.core.layout.AbstractLayoutManager;
@@ -36,105 +44,106 @@ import ar.com.fdvs.dj.domain.CustomExpression;
 import ar.com.fdvs.dj.domain.DynamicJasperDesign;
 import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.entities.Entity;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.Collection;
 
 /**
- * Abstract Class used as base for the different Entities Registration Managers.</br>
+ * Abstract Class used as base for the different Entities Registration
+ * Managers.</br>
  * </br>
- * Every implementation of this class should know how to register a given Entity</br>
+ * Every implementation of this class should know how to register a given
+ * Entity</br>
  * and tranform it into any JasperReport object in order to add it to the </br>
  * JasperDesign.</br>
  * </br>
  * A Registration Manager is the first step required to create a report.</br>
- * A subclass should be created only when we want to add new features to DJ.</br>
- * Probably a new class from this hierarchy will imply a change to one or many </br>
+ * A subclass should be created only when we want to add new features to
+ * DJ.</br>
+ * Probably a new class from this hierarchy will imply a change to one or many
+ * </br>
  * Layout Managers.</br>
  * </br>
+ * 
  * @see Entity
  * @see AbstractLayoutManager
  */
 public abstract class AbstractEntityRegistrationManager implements DJConstants {
 
-	private static final Log log = LogFactory.getLog(AbstractEntityRegistrationManager.class);
+    private static final Log log = LogFactory.getLog(AbstractEntityRegistrationManager.class);
 
-	private DynamicJasperDesign djd;
+    private DynamicJasperDesign djd;
 
-//	private Collection columns;
+    // private Collection columns;
 
-	private DynamicReport dynamicReport;
-	
-	private LayoutManager layoutManager;
+    private DynamicReport dynamicReport;
 
-	public AbstractEntityRegistrationManager(DynamicJasperDesign djd, DynamicReport dr, LayoutManager layoutManager) {
-		this.djd = djd;
-		this.dynamicReport = dr;
-		this.layoutManager = layoutManager;
-	}
+    private LayoutManager layoutManager;
 
-	public final void registerEntities(Collection entities) throws EntitiesRegistrationException {
-//		log.debug("Registering entities: " + this.getClass().getName());
-		try {
-			if (entities!=null) {
-				for (Object entity1 : entities) {
-					Entity entity = (Entity) entity1;
-					registerEntity(entity);
-				}
-			}
-		} catch (RuntimeException e) {
-			throw new EntitiesRegistrationException(e.getMessage(),e);
-		}
-	}
+    public AbstractEntityRegistrationManager(DynamicJasperDesign djd, DynamicReport dr, LayoutManager layoutManager) {
+        this.djd = djd;
+        dynamicReport = dr;
+        this.layoutManager = layoutManager;
+    }
 
-	/**
-	 * Registers in the report's JasperDesign instance whatever is needed to
-	 * show a given entity.
-	 * @throws EntitiesRegistrationException
-	 */
-	protected abstract void registerEntity(Entity entity);
+    public DynamicJasperDesign getDjd() {
+        return djd;
+    }
 
-	/**
-	 * Transforms a DynamicJasper entity into a JasperReport one
-	 * (JRDesignField, JRDesignParameter, JRDesignVariable)
-	 * @throws EntitiesRegistrationException
-	 */
-	protected abstract Object transformEntity(Entity entity) throws JRException;
+    public DynamicReport getDynamicReport() {
+        return dynamicReport;
+    }
 
-	protected void registerCustomExpressionParameter(String name, CustomExpression customExpression) {
-		if (customExpression == null){
-			log.debug("No customExpression for calculation for property " + name );
-			return;
-		}
-		JRDesignParameter dparam = new JRDesignParameter();
-		dparam.setName(name);
-		dparam.setValueClassName(CustomExpression.class.getName());
-		log.debug("Registering customExpression parameter for property " + name );
-		try {
-			getDjd().addParameter(dparam);
-		} catch (JRException e) {
-			throw new EntitiesRegistrationException(e.getMessage(),e);
-		}
-		getDjd().getParametersWithValues().put(name, customExpression);
-	}
+    public LayoutManager getLayoutManager() {
+        return layoutManager;
+    }
 
-//	public Collection getColumns() {
-//		return columns;
-//	}
+    protected void registerCustomExpressionParameter(String name, CustomExpression customExpression) {
+        if (customExpression == null) {
+            log.debug("No customExpression for calculation for property " + name);
+            return;
+        }
+        JRDesignParameter dparam = new JRDesignParameter();
+        dparam.setName(name);
+        dparam.setValueClassName(CustomExpression.class.getName());
+        log.debug("Registering customExpression parameter for property " + name);
+        try {
+            getDjd().addParameter(dparam);
+        } catch (JRException e) {
+            throw new EntitiesRegistrationException(e.getMessage(), e);
+        }
+        getDjd().getParametersWithValues().put(name, customExpression);
+    }
 
-	public DynamicReport getDynamicReport() {
-		return dynamicReport;
-	}
+    // public Collection getColumns() {
+    // return columns;
+    // }
 
-	public LayoutManager getLayoutManager() {
-		return layoutManager;
-	}
+    public final void registerEntities(Collection entities) throws EntitiesRegistrationException {
+        // log.debug("Registering entities: " + this.getClass().getName());
+        try {
+            if (entities != null) {
+                for (Object entity1 : entities) {
+                    Entity entity = (Entity) entity1;
+                    registerEntity(entity);
+                }
+            }
+        } catch (RuntimeException e) {
+            throw new EntitiesRegistrationException(e.getMessage(), e);
+        }
+    }
 
-	public DynamicJasperDesign getDjd() {
-		return djd;
-	}
+    /**
+     * Registers in the report's JasperDesign instance whatever is needed to show a
+     * given entity.
+     * 
+     * @throws EntitiesRegistrationException
+     */
+    protected abstract void registerEntity(Entity entity);
+
+    /**
+     * Transforms a DynamicJasper entity into a JasperReport one (JRDesignField,
+     * JRDesignParameter, JRDesignVariable)
+     * 
+     * @throws EntitiesRegistrationException
+     */
+    protected abstract Object transformEntity(Entity entity) throws JRException;
 
 }

@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -38,26 +38,26 @@ import ar.com.fdvs.dj.util.ExpressionUtils;
  */
 public class SimpleColumn extends PropertyColumn {
 
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
-	
-	public String getTextForExpression() {
-        if( this.getTextFormatter() == null ) {
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
+
+    @Override
+    public String getTextForExpression() {
+        if (getTextFormatter() == null) {
             return "$F{" + getColumnProperty().getProperty() + "}";
         } else {
-            return "((java.text.Format)$P{" +
-                    ExpressionUtils.createParameterName("formatter_for_" + getName(), getTextFormatter()) +
-                    "}).format($F{" +
-                    getColumnProperty().getProperty() +
-                    "})";
+            return "((java.text.Format)$P{"
+                    + ExpressionUtils.createParameterName("formatter_for_" + getName(), getTextFormatter())
+                    + "}).format($F{" + getColumnProperty().getProperty() + "})";
         }
-	}
+    }
 
-	public String getValueClassNameForExpression() {
-        if( this.getTextFormatter() == null ) {
-    		return getColumnProperty().getValueClassName();
+    @Override
+    public String getValueClassNameForExpression() {
+        if (getTextFormatter() == null) {
+            return getColumnProperty().getValueClassName();
         } else {
             return String.class.getName();
         }
-	}
+    }
 
 }

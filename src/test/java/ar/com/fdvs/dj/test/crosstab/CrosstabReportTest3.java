@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,26 +15,26 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.test.crosstab;
 
-
 import java.awt.Color;
 import java.util.Date;
 
 import net.sf.jasperreports.view.JasperDesignViewer;
 import net.sf.jasperreports.view.JasperViewer;
+
 import ar.com.fdvs.dj.core.DJConstants;
 import ar.com.fdvs.dj.domain.DJCalculation;
 import ar.com.fdvs.dj.domain.DJCrosstab;
@@ -60,168 +60,130 @@ import ar.com.fdvs.dj.util.SortUtils;
 
 public class CrosstabReportTest3 extends BaseDjReportTest {
 
-	private Style totalHeader;
-	private Style colAndRowHeaderStyle;
-	private Style mainHeaderStyle;
-	private Style totalStyle;
-	private Style measureStyle;
-	public DynamicReport buildReport() throws Exception {
+    public static void main(String[] args) throws Exception {
+        CrosstabReportTest3 test = new CrosstabReportTest3();
+        test.testReport();
+        JasperViewer.viewReport(test.jp); // finally display the report report
+        JasperDesignViewer.viewReportDesign(test.jr);
+    }
 
+    private Style totalHeader;
+    private Style colAndRowHeaderStyle;
+    private Style mainHeaderStyle;
+    private Style totalStyle;
+    private Style measureStyle;
 
+    @Override
+    public DynamicReport buildReport() throws Exception {
 
-		/*
-		  Creates the DynamicReportBuilder and sets the basic options for
-		  the report
-		 */
-		FastReportBuilder drb = new FastReportBuilder();
-			drb
-			.addColumn("State", "state", String.class.getName(),30)
-			.addColumn("Branch", "branch", String.class.getName(),30)
-			.addColumn("Product Line", "productLine", String.class.getName(),50)
-			.addColumn("Item", "item", String.class.getName(),50)
-			.addColumn("Item Code", "id", Long.class.getName(),30,true)
-			.addColumn("Quantity", "quantity", Long.class.getName(),60,true)
-			.addColumn("Amount", "amount", Float.class.getName(),80,true)
-			.addGroups(1)
-			.setGroupLayout(1, GroupLayout.DEFAULT_WITH_HEADER)
-			.addFooterVariable(1, 7, DJCalculation.SUM, null)
-			.addFooterVariable(1, 6, DJCalculation.SUM, null)
-			.setTitle("November " + getYear() +" sales report")
-			.setSubtitle("This report was generated at " + new Date())
-			.setPageSizeAndOrientation(Page.Page_A4_Landscape())
-			.setPrintColumnNames(false)
-			.setUseFullPageWidth(true);
+        /*
+         * Creates the DynamicReportBuilder and sets the basic options for the report
+         */
+        FastReportBuilder drb = new FastReportBuilder();
+        drb.addColumn("State", "state", String.class.getName(), 30)
+                .addColumn("Branch", "branch", String.class.getName(), 30)
+                .addColumn("Product Line", "productLine", String.class.getName(), 50)
+                .addColumn("Item", "item", String.class.getName(), 50)
+                .addColumn("Item Code", "id", Long.class.getName(), 30, true)
+                .addColumn("Quantity", "quantity", Long.class.getName(), 60, true)
+                .addColumn("Amount", "amount", Float.class.getName(), 80, true).addGroups(1)
+                .setGroupLayout(1, GroupLayout.DEFAULT_WITH_HEADER).addFooterVariable(1, 7, DJCalculation.SUM, null)
+                .addFooterVariable(1, 6, DJCalculation.SUM, null).setTitle("November " + getYear() + " sales report")
+                .setSubtitle("This report was generated at " + new Date())
+                .setPageSizeAndOrientation(Page.Page_A4_Landscape()).setPrintColumnNames(false)
+                .setUseFullPageWidth(true);
 
+        initStyles();
 
-		initStyles();
+        DJCrosstab djcross = createCrosstab();
 
-		DJCrosstab djcross = createCrosstab();
+        drb.addHeaderCrosstab(1, djcross);
 
-		drb.addHeaderCrosstab(1,djcross);
+        DynamicReport dr = drb.build();
 
+        DJGroup g = dr.getColumnsGroups().get(0);
+        g.setHeaderHeight(40);
+        params.put("sr", SortUtils.sortCollection(TestRepositoryProducts.getDummyCollection(), djcross));
 
-		DynamicReport dr = drb.build();
+        return dr;
+    }
 
-		DJGroup g = dr.getColumnsGroups().get(0);
-		g.setHeaderHeight(40);
-		params.put("sr", SortUtils.sortCollection(TestRepositoryProducts.getDummyCollection(),djcross));
+    /**
+     * Creates s DJCrosstab object, ready to be inserted in the main report
+     * 
+     * @return
+     *
+     */
+    private DJCrosstab createCrosstab() {
+        CrosstabBuilder cb = new CrosstabBuilder();
 
-		return dr;
-	}
+        cb.setHeight(100).setWidth(500).setHeaderStyle(mainHeaderStyle)
+                .setDatasource("sr", DJConstants.DATA_SOURCE_ORIGIN_PARAMETER, DJConstants.DATA_SOURCE_TYPE_COLLECTION)
+                .setUseFullWidth(true).setColorScheme(2).setAutomaticTitle(true).setCellBorder(Border.THIN());
 
-	/**
-	 * Creates s DJCrosstab object, ready to be inserted in the main report
-	 * @return
-	 *
-	 */
-	private DJCrosstab createCrosstab() {
-		CrosstabBuilder cb = new CrosstabBuilder();
+        cb.addMeasure("amount", Float.class.getName(), DJCalculation.SUM, "Amount", measureStyle);
 
-		cb.setHeight(100)
-			.setWidth(500)
-			.setHeaderStyle(mainHeaderStyle)
-			.setDatasource("sr",DJConstants.DATA_SOURCE_ORIGIN_PARAMETER, DJConstants.DATA_SOURCE_TYPE_COLLECTION)
-			.setUseFullWidth(true)
-			.setColorScheme(2)
-			.setAutomaticTitle(true)
-			.setCellBorder(Border.THIN());
+        DJCrosstabRow row = new CrosstabRowBuilder().setProperty("productLine", String.class.getName())
+                .setHeaderWidth(100).setHeight(0).setTitle("Product Line my mother teressa").setShowTotals(true)
+                .setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader).setHeaderStyle(colAndRowHeaderStyle)
+                .build();
 
-		cb.addMeasure("amount",Float.class.getName(), DJCalculation.SUM , "Amount",measureStyle);
+        cb.addRow(row);
 
-		DJCrosstabRow row = new CrosstabRowBuilder().setProperty("productLine",String.class.getName())
-			.setHeaderWidth(100).setHeight(0)
-			.setTitle("Product Line my mother teressa")
-			.setShowTotals(true).setTotalStyle(totalStyle)
-			.setTotalHeaderStyle(totalHeader).setHeaderStyle(colAndRowHeaderStyle)
-			.build();
+        row = new CrosstabRowBuilder().setProperty("item", String.class.getName()).setHeaderWidth(100).setHeight(20)
+                .setTitle("Item").setShowTotals(true).setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
+                .setHeaderStyle(colAndRowHeaderStyle).build();
 
-		cb.addRow(row);
+        cb.addRow(row);
 
-		row = new CrosstabRowBuilder().setProperty("item",String.class.getName())
-			.setHeaderWidth(100).setHeight(20)
-			.setTitle("Item").setShowTotals(true)
-			.setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
-			.setHeaderStyle(colAndRowHeaderStyle)
-			.build();
+        // row = new CrosstabRowBuilder().setProperty("id",Long.class.getName())
+        // .setHeaderWidth(100).setHeight(30)
+        // .setTitle("ID").setShowTotals(true)
+        // .setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
+        // .setHeaderStyle(colAndRowHeaderStyle)
+        // .build();
 
-		cb.addRow(row);
+        // cb.addRow(row);
 
-//		row = new CrosstabRowBuilder().setProperty("id",Long.class.getName())
-//			.setHeaderWidth(100).setHeight(30)
-//			.setTitle("ID").setShowTotals(true)
-//			.setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
-//			.setHeaderStyle(colAndRowHeaderStyle)
-//			.build();
+        DJCrosstabColumn col = new CrosstabColumnBuilder().setProperty("state", String.class.getName())
+                .setHeaderHeight(60).setWidth(80).setTitle("State").setShowTotals(true).setTotalStyle(totalStyle)
+                .setTotalHeaderStyle(totalHeader).setHeaderStyle(colAndRowHeaderStyle).build();
 
-//		cb.addRow(row);
+        // cb.addColumn(col);
 
-		DJCrosstabColumn col = new CrosstabColumnBuilder().setProperty("state",String.class.getName())
-			.setHeaderHeight(60).setWidth(80)
-			.setTitle("State").setShowTotals(true)
-			.setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
-			.setHeaderStyle(colAndRowHeaderStyle)
-			.build();
+        col = new CrosstabColumnBuilder().setProperty("branch", String.class.getName()).setHeaderHeight(30).setWidth(70)
+                .setShowTotals(true).setTitle("Branch").setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
+                .setHeaderStyle(colAndRowHeaderStyle).build();
 
+        cb.addColumn(col);
 
-//		cb.addColumn(col);
+        // col = new CrosstabColumnBuilder().setProperty("id",Long.class.getName())
+        // .setHeaderHeight(40).setWidth(70)
+        // .setShowTotals(true).setTitle("ID")
+        // .setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
+        // .setHeaderStyle(colAndRowHeaderStyle)
+        // .build();
 
-		col = new CrosstabColumnBuilder().setProperty("branch",String.class.getName())
-			.setHeaderHeight(30).setWidth(70)
-			.setShowTotals(true).setTitle("Branch")
-			.setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
-			.setHeaderStyle(colAndRowHeaderStyle)
-			.build();
+        // cb.addColumn(col);
 
-		cb.addColumn(col);
+        return cb.build();
+    }
 
-//		col = new CrosstabColumnBuilder().setProperty("id",Long.class.getName())
-//			.setHeaderHeight(40).setWidth(70)
-//			.setShowTotals(true).setTitle("ID")
-//			.setTotalStyle(totalStyle).setTotalHeaderStyle(totalHeader)
-//			.setHeaderStyle(colAndRowHeaderStyle)
-//			.build();
-
-//		cb.addColumn(col);
-
-		return cb.build();
-	}
-
-	/**
-	 *
-	 */
-	private void initStyles() {
-		totalHeader = new StyleBuilder(false)
-			.setHorizontalAlign(HorizontalAlign.CENTER)
-			.setVerticalAlign(VerticalAlign.MIDDLE)
-			.setFont(Font.ARIAL_MEDIUM_BOLD)
-			.setTextColor(Color.BLUE)
-			.build();
-		colAndRowHeaderStyle = new StyleBuilder(false)
-			.setHorizontalAlign(HorizontalAlign.LEFT)
-			.setVerticalAlign(VerticalAlign.TOP)
-			.setFont(Font.ARIAL_MEDIUM_BOLD)
-			.build();
-		mainHeaderStyle = new StyleBuilder(false)
-			.setHorizontalAlign(HorizontalAlign.CENTER)
-			.setVerticalAlign(VerticalAlign.MIDDLE)
-			.setFont(Font.ARIAL_BIG_BOLD)
-			.setTextColor(Color.BLACK)
-			.build();
-		totalStyle = new StyleBuilder(false).setPattern("#,###.##")
-			.setHorizontalAlign(HorizontalAlign.RIGHT)
-			.setFont(Font.ARIAL_MEDIUM_BOLD)
-			.build();
-		measureStyle = new StyleBuilder(false).setPattern("#,###.##")
-			.setHorizontalAlign(HorizontalAlign.RIGHT)
-			.setFont(Font.ARIAL_MEDIUM)
-			.build();
-	}
-
-	public static void main(String[] args) throws Exception {
-		CrosstabReportTest3 test = new CrosstabReportTest3();
-		test.testReport();
-		JasperViewer.viewReport(test.jp);	//finally display the report report
-		JasperDesignViewer.viewReportDesign(test.jr);
-	}
+    /**
+     *
+     */
+    private void initStyles() {
+        totalHeader = new StyleBuilder(false).setHorizontalAlign(HorizontalAlign.CENTER)
+                .setVerticalAlign(VerticalAlign.MIDDLE).setFont(Font.ARIAL_MEDIUM_BOLD).setTextColor(Color.BLUE)
+                .build();
+        colAndRowHeaderStyle = new StyleBuilder(false).setHorizontalAlign(HorizontalAlign.LEFT)
+                .setVerticalAlign(VerticalAlign.TOP).setFont(Font.ARIAL_MEDIUM_BOLD).build();
+        mainHeaderStyle = new StyleBuilder(false).setHorizontalAlign(HorizontalAlign.CENTER)
+                .setVerticalAlign(VerticalAlign.MIDDLE).setFont(Font.ARIAL_BIG_BOLD).setTextColor(Color.BLACK).build();
+        totalStyle = new StyleBuilder(false).setPattern("#,###.##").setHorizontalAlign(HorizontalAlign.RIGHT)
+                .setFont(Font.ARIAL_MEDIUM_BOLD).build();
+        measureStyle = new StyleBuilder(false).setPattern("#,###.##").setHorizontalAlign(HorizontalAlign.RIGHT)
+                .setFont(Font.ARIAL_MEDIUM).build();
+    }
 
 }

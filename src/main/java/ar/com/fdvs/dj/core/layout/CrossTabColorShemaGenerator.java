@@ -1,184 +1,198 @@
+
 package ar.com.fdvs.dj.core.layout;
 
-import java.awt.*;
+import java.awt.Color;
 
 public abstract class CrossTabColorShemaGenerator extends CrossTabColorShema {
 
-	public static Color[][] createSchema(int schema, int numCols, int numRows){
+    public static Color[][] createSchema(CrossTabColorShema ctColorScheme, int numCols, int numRows) {
+        ctColorScheme.colors = new Color[numCols + 1][numRows + 1];
+        ctColorScheme.create(numCols + 1, numRows + 1);
+        return ctColorScheme.colors;
+    }
 
-		CrossTabColorShema generator;
+    public static Color[][] createSchema(int schema, int numCols, int numRows) {
 
-		if (schema == 0)
-			generator = new Schema0();
-		else if (schema == 1)
-			generator = new Schema1();
-		else if (schema == 2)
-			generator = new Schema2();
-		else if (schema == 3)
-			generator = new Schema3();
-		else if (schema == 4)
-			generator = new Schema4();
-		else if (schema == 5)
-			generator = new Schema5();
-		else if (schema == 6)
-			generator = new Schema6();
-		else
-			generator = new Schema1();
+        CrossTabColorShema generator;
 
-		return createSchema(generator,numCols,numRows);
-	}
+        if (schema == 0) {
+            generator = new Schema0();
+        } else if (schema == 1) {
+            generator = new Schema1();
+        } else if (schema == 2) {
+            generator = new Schema2();
+        } else if (schema == 3) {
+            generator = new Schema3();
+        } else if (schema == 4) {
+            generator = new Schema4();
+        } else if (schema == 5) {
+            generator = new Schema5();
+        } else if (schema == 6) {
+            generator = new Schema6();
+        } else {
+            generator = new Schema1();
+        }
 
-	public static Color[][] createSchema(CrossTabColorShema ctColorScheme, int numCols, int numRows) {
-		ctColorScheme.colors = new Color[numCols+1][numRows+1];
-		ctColorScheme.create(numCols+1, numRows+1);
-		return ctColorScheme.colors;
-	}
-	
+        return createSchema(generator, numCols, numRows);
+    }
+
 }
 
-class Schema0 extends CrossTabColorShema{
+class Schema0 extends CrossTabColorShema {
 
-	public void create(int numCols, int numRows) {
-		for (int i = numCols-1; i >= 0; i--) {
-			for (int j =  numRows-1; j >= 0; j--) {
-				colors[i][j] =  Color.WHITE;
-			}
-		}
-	}
+    @Override
+    public void create(int numCols, int numRows) {
+        for (int i = numCols - 1; i >= 0; i--) {
+            for (int j = numRows - 1; j >= 0; j--) {
+                colors[i][j] = Color.WHITE;
+            }
+        }
+    }
 }
 
 /**
  * Violet
+ * 
  * @author Juan Manuel
  *
  */
-class Schema1 extends CrossTabColorShema{
+class Schema1 extends CrossTabColorShema {
 
-	public void create(int numCols, int numRows) {
-		int base = 220;
-		int base2 = 150;
+    @Override
+    public void create(int numCols, int numRows) {
+        int base = 220;
+        int base2 = 150;
 
-		int coli =(255-base) / (numCols);
-		int colj = (255-base2) / (numRows);
-		for (int i = numCols-1; i >= 0; i--) {
-			int auxi = base + coli * i;
-			for (int j =  numRows-1; j >= 0; j--) {
-				int auxj = base2 + colj * j;
-				colors[i][j] = new Color(auxj,(auxj*auxi)/255,auxi);
-			}
-		}
-	}
+        int coli = (255 - base) / numCols;
+        int colj = (255 - base2) / numRows;
+        for (int i = numCols - 1; i >= 0; i--) {
+            int auxi = base + coli * i;
+            for (int j = numRows - 1; j >= 0; j--) {
+                int auxj = base2 + colj * j;
+                colors[i][j] = new Color(auxj, auxj * auxi / 255, auxi);
+            }
+        }
+    }
 }
 
 /**
  * Pink
+ * 
  * @author Juan Manuel
  *
  */
-class Schema2 extends CrossTabColorShema{
+class Schema2 extends CrossTabColorShema {
 
-	public void create(int numCols, int numRows) {
-		int base = 220;
-		int base2 = 150;
+    @Override
+    public void create(int numCols, int numRows) {
+        int base = 220;
+        int base2 = 150;
 
-		int coli =(255-base) / (numCols);
-		int colj = (255-base2) / (numRows);
-		for (int i = numCols-1; i >= 0; i--) {
-			int auxi = base + coli * i;
-			for (int j =  numRows-1; j >= 0; j--) {
-				int auxj = base2 + colj * j;
-				colors[i][j] = new Color(auxi,(auxj*auxi)/255,auxj);
-			}
-		}
-	}
+        int coli = (255 - base) / numCols;
+        int colj = (255 - base2) / numRows;
+        for (int i = numCols - 1; i >= 0; i--) {
+            int auxi = base + coli * i;
+            for (int j = numRows - 1; j >= 0; j--) {
+                int auxj = base2 + colj * j;
+                colors[i][j] = new Color(auxi, auxj * auxi / 255, auxj);
+            }
+        }
+    }
 }
 
 /**
  * Light pink/brown
+ * 
  * @author Juan Manuel
  *
  */
-class Schema3 extends CrossTabColorShema{
+class Schema3 extends CrossTabColorShema {
 
-	public void create(int numCols, int numRows) {
-		int base = 220;
-		int base2 = 150;
+    @Override
+    public void create(int numCols, int numRows) {
+        int base = 220;
+        int base2 = 150;
 
-		int coli =(255-base) / (numCols);
-		int colj = (255-base2) / (numRows);
-		for (int i = numCols-1; i >= 0; i--) {
-			int auxi = base + coli * i;
-			for (int j =  numRows-1; j >= 0; j--) {
-				int auxj = base2 + colj * j;
-				colors[i][j] = new Color(auxi,auxj,(auxj*auxi)/255);
-			}
-		}
-	}
+        int coli = (255 - base) / numCols;
+        int colj = (255 - base2) / numRows;
+        for (int i = numCols - 1; i >= 0; i--) {
+            int auxi = base + coli * i;
+            for (int j = numRows - 1; j >= 0; j--) {
+                int auxj = base2 + colj * j;
+                colors[i][j] = new Color(auxi, auxj, auxj * auxi / 255);
+            }
+        }
+    }
 }
 
 /**
  * light green
+ * 
  * @author Juan Manuel
  *
  */
-class Schema4 extends CrossTabColorShema{
+class Schema4 extends CrossTabColorShema {
 
-	public void create(int numCols, int numRows) {
-		int base = 220;
-		int base2 = 150;
+    @Override
+    public void create(int numCols, int numRows) {
+        int base = 220;
+        int base2 = 150;
 
-		int coli =(255-base) / (numCols);
-		int colj = (255-base2) / (numRows);
-		for (int i = numCols-1; i >= 0; i--) {
-			int auxi = base + coli * i;
-			for (int j =  numRows-1; j >= 0; j--) {
-				int auxj = base2 + colj * j;
-				colors[i][j] = new Color((auxj*auxi)/255,auxi,auxj);
-			}
-		}
-	}
+        int coli = (255 - base) / numCols;
+        int colj = (255 - base2) / numRows;
+        for (int i = numCols - 1; i >= 0; i--) {
+            int auxi = base + coli * i;
+            for (int j = numRows - 1; j >= 0; j--) {
+                int auxj = base2 + colj * j;
+                colors[i][j] = new Color(auxj * auxi / 255, auxi, auxj);
+            }
+        }
+    }
 }
 
 /**
  * blue
+ * 
  * @author Juan Manuel
  *
  */
-class Schema5 extends CrossTabColorShema{
+class Schema5 extends CrossTabColorShema {
 
-	public void create(int numCols, int numRows) {
-		int base2 = 220;
-		int base = 150;
+    @Override
+    public void create(int numCols, int numRows) {
+        int base2 = 220;
+        int base = 150;
 
-		int coli =(255-base) / (numCols);
-		int colj = (255-base2) / (numRows);
-		for (int i = numCols-1; i >= 0; i--) {
-			int auxi = base + coli * i;
-			for (int j =  numRows-1; j >= 0; j--) {
-				int auxj = base2 + colj * j;
-				colors[i][j] = new Color((auxj*auxi)/255,auxi,auxj);
-			}
-		}
-	}
+        int coli = (255 - base) / numCols;
+        int colj = (255 - base2) / numRows;
+        for (int i = numCols - 1; i >= 0; i--) {
+            int auxi = base + coli * i;
+            for (int j = numRows - 1; j >= 0; j--) {
+                int auxj = base2 + colj * j;
+                colors[i][j] = new Color(auxj * auxi / 255, auxi, auxj);
+            }
+        }
+    }
 }
 
 /**
  * gray
+ * 
  * @author Juan Manuel
  *
  */
-class Schema6 extends CrossTabColorShema{
+class Schema6 extends CrossTabColorShema {
 
-	public void create(int numCols, int numRows) {
-		int base = 200;
+    @Override
+    public void create(int numCols, int numRows) {
+        int base = 200;
 
-		int coli =(255-base) / (numCols + numRows);
-		for (int i = numCols-1; i >= 0; i--) {
-			for (int j =  numRows-1; j >= 0; j--) {
-				int auxi = base + coli * (j + i);
-				colors[i][j] = new Color(auxi,auxi,auxi);
-			}
-		}
-	}
+        int coli = (255 - base) / (numCols + numRows);
+        for (int i = numCols - 1; i >= 0; i--) {
+            for (int j = numRows - 1; j >= 0; j--) {
+                int auxi = base + coli * (j + i);
+                colors[i][j] = new Color(auxi, auxi, auxi);
+            }
+        }
+    }
 }
-

@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,25 +15,27 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 /*
 
  */
+
 package ar.com.fdvs.dj.domain;
+
+import net.sf.jasperreports.engine.JRExpression;
 
 import ar.com.fdvs.dj.core.layout.HorizontalBandAlignment;
 import ar.com.fdvs.dj.domain.entities.Entity;
-import net.sf.jasperreports.engine.JRExpression;
 
 /**
  * @author msimone
@@ -87,7 +89,7 @@ public class AutoText extends DJBaseElement {
     private JRExpression expresion;
     private int pageOffset = 0;
     private boolean useI18n;
-    private byte pattern; //Applies for CREATED_ON, its the pattern used for dates
+    private byte pattern; // Applies for CREATED_ON, its the pattern used for dates
 
     private int height = 15;
 
@@ -99,16 +101,15 @@ public class AutoText extends DJBaseElement {
     private int width = WIDTH_NOT_SET;
 
     /**
-     * For autotexts that consists in two parts (like: "page x of y" and "x /
-     * y"). <br>
-     * These autotext are compound by 2 text-fields with different render time
-     * (one is immediate, the other generally "time-report")<br>
-     * The first part is the "immediate" second part is the "y"
-     * (time-report)<br>
-     * width2 defines how width is the second part. This is for fine tuning of
-     * the layout. depending on the size of report the total pages can be a
-     * small or big number, making this width wide enough should prevent the
-     * text to override the space given
+     * For autotexts that consists in two parts (like: "page x of y" and "x / y").
+     * <br>
+     * These autotext are compound by 2 text-fields with different render time (one
+     * is immediate, the other generally "time-report")<br>
+     * The first part is the "immediate" second part is the "y" (time-report)<br>
+     * width2 defines how width is the second part. This is for fine tuning of the
+     * layout. depending on the size of report the total pages can be a small or big
+     * number, making this width wide enough should prevent the text to override the
+     * space given
      */
     private int width2 = WIDTH_NOT_SET;
 
@@ -117,52 +118,6 @@ public class AutoText extends DJBaseElement {
      */
     private boolean fixedWith = true;
     private BooleanExpression printWhenExpression;
-
-    public boolean isFixedWith() {
-        return fixedWith;
-    }
-
-    public void setFixedWith(boolean fixedWith) {
-        this.fixedWith = fixedWith;
-    }
-
-    /**
-     * returns the style
-     *
-     * @return can be null if no style has been set
-     */
-    public Style getStyle() {
-        return style;
-    }
-
-    public AutoText setStyle(Style newStyle) {
-        style = newStyle;
-        return this;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getWidth2() {
-        return width2;
-    }
-
-    public void setWidth2(int width2) {
-        this.width2 = width2;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
 
     public AutoText(byte type, byte position, HorizontalBandAlignment alignment) {
         this.type = type;
@@ -194,97 +149,143 @@ public class AutoText extends DJBaseElement {
         this.width2 = width2;
     }
 
-    public AutoText(String message, byte position, HorizontalBandAlignment alignment) {
-        this.type = AUTOTEXT_CUSTOM_MESSAGE;
+    public AutoText(JRExpression expression, byte position, HorizontalBandAlignment alignment, int with) {
+        type = AUTOTEXT_JREXPRESSION;
         this.position = position;
         this.alignment = alignment;
-        this.messageKey = message;
-        this.fixedWith = false;
+        expresion = expression;
+        width = with;
+        fixedWith = false;
+    }
+
+    public AutoText(String message, byte position, HorizontalBandAlignment alignment) {
+        type = AUTOTEXT_CUSTOM_MESSAGE;
+        this.position = position;
+        this.alignment = alignment;
+        messageKey = message;
+        fixedWith = false;
     }
 
     public AutoText(String message, byte position, HorizontalBandAlignment alignment, int with) {
-        this.type = AUTOTEXT_CUSTOM_MESSAGE;
+        type = AUTOTEXT_CUSTOM_MESSAGE;
         this.position = position;
         this.alignment = alignment;
-        this.messageKey = message;
-        this.width = with;
-        this.fixedWith = false;
-    }
-
-    public AutoText(JRExpression expression, byte position, HorizontalBandAlignment alignment, int with) {
-        this.type = AUTOTEXT_JREXPRESSION;
-        this.position = position;
-        this.alignment = alignment;
-        this.expresion = expression;
-        this.width = with;
-        this.fixedWith = false;
+        messageKey = message;
+        width = with;
+        fixedWith = false;
     }
 
     public HorizontalBandAlignment getAlignment() {
         return alignment;
     }
 
-    public void setAlignment(HorizontalBandAlignment alignment) {
-        this.alignment = alignment;
+    public JRExpression getExpresion() {
+        return expresion;
     }
 
-    public byte getPosition() {
-        return position;
-    }
-
-    public void setPosition(byte position) {
-        this.position = position;
-    }
-
-    public byte getType() {
-        return type;
-    }
-
-    public void setType(byte type) {
-        this.type = type;
+    public int getHeight() {
+        return height;
     }
 
     public String getMessageKey() {
         return messageKey;
     }
 
-    public void setMessageKey(String message) {
-        this.messageKey = message;
+    public int getPageOffset() {
+        return pageOffset;
     }
 
     public byte getPattern() {
         return pattern;
     }
 
-    public void setPrintWhenExpression(BooleanExpression printWhenExpression) {
-        this.printWhenExpression = printWhenExpression;
+    public byte getPosition() {
+        return position;
     }
 
     public BooleanExpression getPrintWhenExpression() {
         return printWhenExpression;
     }
 
-    public JRExpression getExpresion() {
-        return expresion;
+    /**
+     * returns the style
+     *
+     * @return can be null if no style has been set
+     */
+    public Style getStyle() {
+        return style;
     }
 
-    public void setExpresion(JRExpression expresion) {
-        this.expresion = expresion;
+    public byte getType() {
+        return type;
     }
 
-    public int getPageOffset() {
-        return pageOffset;
+    public int getWidth() {
+        return width;
     }
 
-    public void setPageOffset(int pageStartNumber) {
-        this.pageOffset = pageStartNumber;
+    public int getWidth2() {
+        return width2;
+    }
+
+    public boolean isFixedWith() {
+        return fixedWith;
     }
 
     public boolean isUseI18n() {
         return useI18n;
     }
 
+    public void setAlignment(HorizontalBandAlignment alignment) {
+        this.alignment = alignment;
+    }
+
+    public void setExpresion(JRExpression expresion) {
+        this.expresion = expresion;
+    }
+
+    public void setFixedWith(boolean fixedWith) {
+        this.fixedWith = fixedWith;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setMessageKey(String message) {
+        messageKey = message;
+    }
+
+    public void setPageOffset(int pageStartNumber) {
+        pageOffset = pageStartNumber;
+    }
+
+    public void setPosition(byte position) {
+        this.position = position;
+    }
+
+    public void setPrintWhenExpression(BooleanExpression printWhenExpression) {
+        this.printWhenExpression = printWhenExpression;
+    }
+
+    public AutoText setStyle(Style newStyle) {
+        style = newStyle;
+        return this;
+    }
+
+    public void setType(byte type) {
+        this.type = type;
+    }
+
     public void setUseI18n(boolean useI18n) {
         this.useI18n = useI18n;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setWidth2(int width2) {
+        this.width2 = width2;
     }
 }

@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -31,80 +31,82 @@ package ar.com.fdvs.dj.domain.constants;
 
 public class Page extends BaseDomainConstant {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int height = 0;
-	private int width = 0;
-	private boolean orientationPortrait = true;
+    public static Page Page_A4_Landscape() {
+        return new Page(595, 842, false);
+    }
 
-	public boolean isOrientationPortrait() {
-		return orientationPortrait;
-	}
+    public static Page Page_A4_Portrait() {
+        return new Page(842, 595, true);
+    }
 
-	public void setOrientationPortrait(boolean orientationPortrait) {
-		this.orientationPortrait = orientationPortrait;
-	}
+    public static Page Page_Legal_Landscape() {
+        return new Page(612, 1008, false);
+    }
 
-	public int getHeight() {
-		return height;
-	}
+    public static Page Page_Legal_Portrait() {
+        return new Page(1008, 612, true);
+    }
 
-	public void setHeight(int height) {
-		this.height = height;
-	}
+    public static Page Page_Letter_Landscape() {
+        return new Page(612, 792, false);
+    }
 
-	public int getWidth() {
-		return width;
-	}
+    public static Page Page_Letter_Portrait() {
+        return new Page(792, 612, true);
+    }
 
-	public void setWidth(int width) {
-		this.width = width;
-	}
+    private int height = 0;
 
-	public Page() {
+    private int width = 0;
 
-	}
+    private boolean orientationPortrait = true;
 
-	/**
-	 * Default constructor for portrait orientation
-	 * @param height
-	 * @param width
-	 */
-	public Page(int height, int width) {
-		this.height = height;
-		this.width = width;
-		this.orientationPortrait = true;
-	}
+    public Page() {
 
-	public Page(int height, int width, boolean portrait) {
-		this.height = height;
-		this.width = width;
-		this.orientationPortrait = portrait;
-	}
+    }
 
-	public static Page Page_A4_Portrait(){
-		return new Page(842,595,true);
-	}
+    /**
+     * Default constructor for portrait orientation
+     * 
+     * @param height
+     * @param width
+     */
+    public Page(int height, int width) {
+        this.height = height;
+        this.width = width;
+        orientationPortrait = true;
+    }
 
-	public static Page Page_A4_Landscape(){
-		return new Page(595,842,false);
-	}
+    public Page(int height, int width, boolean portrait) {
+        this.height = height;
+        this.width = width;
+        orientationPortrait = portrait;
+    }
 
-	public static Page Page_Legal_Portrait(){
-		return new Page(1008,612,true);
-	}
+    public int getHeight() {
+        return height;
+    }
 
-	public static Page Page_Legal_Landscape(){
-		return new Page(612,1008,false);
-	}
+    public int getWidth() {
+        return width;
+    }
 
-	public static Page Page_Letter_Portrait(){
-		return new Page(792,612,true);
-	}
+    public boolean isOrientationPortrait() {
+        return orientationPortrait;
+    }
 
-	public static Page Page_Letter_Landscape(){
-		return new Page(612,792,false);
-	}
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setOrientationPortrait(boolean orientationPortrait) {
+        this.orientationPortrait = orientationPortrait;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
 }
-

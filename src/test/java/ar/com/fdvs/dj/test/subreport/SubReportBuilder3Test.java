@@ -4,14 +4,14 @@
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the FDV Solutions S.A. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the FDV Solutions S.A. nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -27,6 +27,13 @@
 
 package ar.com.fdvs.dj.test.subreport;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.sf.jasperreports.view.JasperDesignViewer;
+import net.sf.jasperreports.view.JasperViewer;
+
 import ar.com.fdvs.dj.core.DJConstants;
 import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
 import ar.com.fdvs.dj.domain.CustomExpression;
@@ -36,120 +43,110 @@ import ar.com.fdvs.dj.domain.builders.SubReportBuilder;
 import ar.com.fdvs.dj.domain.entities.Subreport;
 import ar.com.fdvs.dj.test.BaseDjReportTest;
 import ar.com.fdvs.dj.test.domain.Product;
-import net.sf.jasperreports.view.JasperDesignViewer;
-import net.sf.jasperreports.view.JasperViewer;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * This tests makes the subreport to use it's own parameters map (which a map stored in the parent parameters map)
- * The subreport also uses custom expressions.
- * The idea is test that custom expression does not clash even when using parent report parameters map
+ * This tests makes the subreport to use it's own parameters map (which a map
+ * stored in the parent parameters map) The subreport also uses custom
+ * expressions. The idea is test that custom expression does not clash even when
+ * using parent report parameters map
+ * 
  * @author mamana
  *
  */
 public class SubReportBuilder3Test extends BaseDjReportTest {
 
-	public DynamicReport buildReport() throws Exception {
+    public static void main(String[] args) throws Exception {
+        SubReportBuilder3Test test = new SubReportBuilder3Test();
+        test.testReport();
+        JasperViewer.viewReport(test.jp);
+        JasperDesignViewer.viewReportDesign(test.jr);
+    }
 
-		FastReportBuilder drb = new FastReportBuilder();
-		drb.addColumn("State", "state", String.class.getName(), 30)
-			.addColumn("Branch", "branch", String.class.getName(), 30)
-			.addColumn("Product Line", "productLine", String.class.getName(), 50)
-			.addColumn("Item", "item", String.class.getName(), 50)
-//			.addColumn("Item Code", "id", Long.class.getName(),30,true)
-			.addColumn("Item Code", new CustomExpression() {
-                public Object evaluate(Map fields, Map variables, Map parameters) {
-                    return "XXXX";
-                }
+    @Override
+    public DynamicReport buildReport() throws Exception {
 
-                public String getClassName() {
-                    return String.class.getName();
-                }
-            },50,false,null,null)
-                    .addColumn("Quantity", "quantity", Long.class.getName(), 60, true)
-                    .addColumn("Amount", "amount", Float.class.getName(), 70, true)
-                    .addGroups(1)
-                    .setMargins(5, 5, 20, 20)
-                    .setTitle("November " + getYear() +" sales report")
-                    .setSubtitle("This report was generated at " + new Date())
-                    .setUseFullPageWidth(true);
+        FastReportBuilder drb = new FastReportBuilder();
+        drb.addColumn("State", "state", String.class.getName(), 30)
+                .addColumn("Branch", "branch", String.class.getName(), 30)
+                .addColumn("Product Line", "productLine", String.class.getName(), 50)
+                .addColumn("Item", "item", String.class.getName(), 50)
+                // .addColumn("Item Code", "id", Long.class.getName(),30,true)
+                .addColumn("Item Code", new CustomExpression() {
+                    @Override
+                    public Object evaluate(Map fields, Map variables, Map parameters) {
+                        return "XXXX";
+                    }
 
-		/*
-		  Create the subreport. Note that the "subreport" object is then passed
-		  as parameter to the GroupBuilder
-		 */
-		Subreport subreport = new SubReportBuilder()
-						.setDataSource(	DJConstants.DATA_SOURCE_ORIGIN_PARAMETER,
-										DJConstants.DATA_SOURCE_TYPE_COLLECTION,
-										"statistics")
-						.setDynamicReport(createFooterSubreport(), new ClassicLayoutManager())
-						.setParameterMapPath("subreportParameterMap")
-						.setSplitAllowed(false)						
-						.setStartInNewPage(false)
-						.build();
+                    @Override
+                    public String getClassName() {
+                        return String.class.getName();
+                    }
+                }, 50, false, null, null).addColumn("Quantity", "quantity", Long.class.getName(), 60, true)
+                .addColumn("Amount", "amount", Float.class.getName(), 70, true).addGroups(1).setMargins(5, 5, 20, 20)
+                .setTitle("November " + getYear() + " sales report")
+                .setSubtitle("This report was generated at " + new Date()).setUseFullPageWidth(true);
 
-		drb.addSubreportInGroupFooter(1, subreport);
+        /*
+         * Create the subreport. Note that the "subreport" object is then passed as
+         * parameter to the GroupBuilder
+         */
+        Subreport subreport = new SubReportBuilder()
+                .setDataSource(DJConstants.DATA_SOURCE_ORIGIN_PARAMETER, DJConstants.DATA_SOURCE_TYPE_COLLECTION,
+                        "statistics")
+                .setDynamicReport(createFooterSubreport(), new ClassicLayoutManager())
+                .setParameterMapPath("subreportParameterMap").setSplitAllowed(false).setStartInNewPage(false).build();
 
-		/*
-		  add in a map the paramter with the data source to use in the subreport.
-		  The "params" map is later passed to the DynamicJasperHelper.generateJasperPrint(...)
-		 */
-		params.put("statistics", Product.statistics_  ); // the 2nd param is a static Collection
+        drb.addSubreportInGroupFooter(1, subreport);
 
-		Map subreportParameterMap = new HashMap();
-		subreportParameterMap.put("rightHeader", "Sub report right header");
+        /*
+         * add in a map the paramter with the data source to use in the subreport. The
+         * "params" map is later passed to the
+         * DynamicJasperHelper.generateJasperPrint(...)
+         */
+        params.put("statistics", Product.statistics_); // the 2nd param is a static Collection
 
-		params.put("subreportParameterMap", subreportParameterMap  ); // the 2nd param is a static Collection
+        Map subreportParameterMap = new HashMap();
+        subreportParameterMap.put("rightHeader", "Sub report right header");
 
-		/*
-		  Create the group and add the subreport (as a Fotter subreport)
-		 */
-		drb.setUseFullPageWidth(true);
+        params.put("subreportParameterMap", subreportParameterMap); // the 2nd param is a static Collection
 
-		DynamicReport dr = drb.build();
+        /*
+         * Create the group and add the subreport (as a Fotter subreport)
+         */
+        drb.setUseFullPageWidth(true);
 
-		return dr;
-	}
+        DynamicReport dr = drb.build();
 
-	/**
-	 * Created and compiles dynamically a report to be used as subreportr
-	 * @return
-	 * @throws Exception
-	 */
-	private DynamicReport createFooterSubreport() throws Exception {
-		FastReportBuilder rb = new FastReportBuilder();
-		DynamicReport dr = rb
-		.addColumn("Area", "name", String.class.getName(), 100)
-		.addColumn("Average", "average", Float.class.getName(), 50)
-		.addColumn("%", "percentage", Float.class.getName(), 50)
-		.addColumn("Amount", "amount", Float.class.getName(), 50)
-        .addColumn("CustomExp", new CustomExpression() {
-            public Object evaluate(Map fields, Map variables, Map parameters) {
-                return "Soy la C.E.";
-            }
+        return dr;
+    }
 
-            public String getClassName() {
-                return String.class.getName();
-            }
-        },50,false,null,null)
-		.addGroups(1)
-//		.setMargins(5, 5, 20, 20)
-//		.setTemplateFile("templates/TemplateReportTest.jrxml")
-		.setUseFullPageWidth(true)
-		.setTitle("Subreport for this group")
-		.build();
-		return dr;
-	}
+    /**
+     * Created and compiles dynamically a report to be used as subreportr
+     * 
+     * @return
+     * @throws Exception
+     */
+    private DynamicReport createFooterSubreport() throws Exception {
+        FastReportBuilder rb = new FastReportBuilder();
+        DynamicReport dr = rb.addColumn("Area", "name", String.class.getName(), 100)
+                .addColumn("Average", "average", Float.class.getName(), 50)
+                .addColumn("%", "percentage", Float.class.getName(), 50)
+                .addColumn("Amount", "amount", Float.class.getName(), 50)
+                .addColumn("CustomExp", new CustomExpression() {
+                    @Override
+                    public Object evaluate(Map fields, Map variables, Map parameters) {
+                        return "Soy la C.E.";
+                    }
 
-
-	public static void main(String[] args) throws Exception {
-		SubReportBuilder3Test test = new SubReportBuilder3Test();
-		test.testReport();
-		JasperViewer.viewReport(test.jp);
-		JasperDesignViewer.viewReportDesign(test.jr);
-	}
+                    @Override
+                    public String getClassName() {
+                        return String.class.getName();
+                    }
+                }, 50, false, null, null).addGroups(1)
+                // .setMargins(5, 5, 20, 20)
+                // .setTemplateFile("templates/TemplateReportTest.jrxml")
+                .setUseFullPageWidth(true).setTitle("Subreport for this group").build();
+        return dr;
+    }
 
 }

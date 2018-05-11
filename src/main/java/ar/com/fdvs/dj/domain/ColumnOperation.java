@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -35,23 +35,24 @@ import ar.com.fdvs.dj.domain.entities.columns.OperationColumn;
 /**
  * Numerical operations that can be applied by an OperationColumn.</br>
  * </br>
+ * 
  * @see OperationColumn
  */
 public class ColumnOperation extends DJBaseElement {
 
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
-	
-	public static ColumnOperation SUM = new ColumnOperation("+");
-	public static ColumnOperation SUBSTRACT = new ColumnOperation("-");
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
 
-	private String value;
+    public static ColumnOperation SUM = new ColumnOperation("+");
+    public static ColumnOperation SUBSTRACT = new ColumnOperation("-");
 
-	private ColumnOperation(String value) {
-		this.value = value;
-	}
+    private String value;
 
-	public String getValue() {
-		return value;
-	}
+    private ColumnOperation(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
 
 }

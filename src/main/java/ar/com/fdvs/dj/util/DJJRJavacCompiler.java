@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,31 +15,30 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.util;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.design.JRJavacCompiler;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.design.JRJavacCompiler;
+
 /**
- * @author Alejandro Gomez (alejandro.gomez@fdvsolutions.com)
- *         Date: Oct 8, 2007
+ * @author Alejandro Gomez (alejandro.gomez@fdvsolutions.com) Date: Oct 8, 2007
  *         Time: 11:07:07 AM
  */
 public class DJJRJavacCompiler extends JRJavacCompiler {
@@ -51,6 +50,7 @@ public class DJJRJavacCompiler extends JRJavacCompiler {
         super(jasperReportsContext);
     }
 
+    @Override
     public String compileClasses(File[] sourceFiles, String classpath) throws JRException {
         String[] source = new String[sourceFiles.length + 5];
         source[0] = "javac";
@@ -83,8 +83,7 @@ public class DJJRJavacCompiler extends JRJavacCompiler {
             }
 
             return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             StringBuilder files = new StringBuilder();
             for (File sourceFile : sourceFiles) {
                 files.append(sourceFile.getPath());

@@ -1,8 +1,9 @@
+
 package ar.com.fdvs.dj.domain;
 
-import ar.com.fdvs.dj.domain.constants.Font;
+import java.awt.Color;
 
-import java.awt.*;
+import ar.com.fdvs.dj.domain.constants.Font;
 
 /**
  * Created by DJ Mamana on 04/12/2015.
@@ -28,32 +29,34 @@ public class DJWaterMark extends DJBaseElement {
 
     public DJWaterMark(String text, Font font, Color textColor, int angle) {
         this.text = text;
-        if (font != null)
+        if (font != null) {
             this.font = font;
-        else {
+        } else {
             this.font = (Font) Font.ARIAL_BIG.clone();
             this.font.setFontSize(80);
         }
-        if (textColor!= null)
+        if (textColor != null) {
             this.textColor = textColor;
-        if (angle >= 0 && angle <= 360)
+        }
+        if (angle >= 0 && angle <= 360) {
             this.angle = angle;
+        }
 
     }
 
-    public String getText() {
-        return text;
+    public int getAngle() {
+        return angle;
     }
 
     public Font getFont() {
         return font;
     }
 
-    public Color getTextColor() {
-        return textColor;
+    public String getText() {
+        return text;
     }
 
-    public int getAngle() {
-        return angle;
+    public Color getTextColor() {
+        return textColor;
     }
 }

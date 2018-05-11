@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -40,60 +40,67 @@ import ar.com.fdvs.dj.domain.entities.Entity;
  */
 public abstract class PropertyColumn extends AbstractColumn {
 
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
-	
-	private ColumnProperty columnProperty;
-	private CustomExpression expressionToGroupBy;
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
 
-	/**
-	 * This parameter goes to JRField.description, needed when using XML dataSources
-	 */
-	private String fieldDescription;
-	/**
-	 * Field properties are passed directly to JasperReports JRField
-	 */
+    private ColumnProperty columnProperty;
+    private CustomExpression expressionToGroupBy;
 
-	public String getFieldDescription() {
-		return fieldDescription;
-	}
+    /**
+     * This parameter goes to JRField.description, needed when using XML dataSources
+     */
+    private String fieldDescription;
 
-	public void setFieldDescription(String fieldDescription) {
-		this.fieldDescription = fieldDescription;
-	}
+    public ColumnProperty getColumnProperty() {
+        return columnProperty;
+    }
 
-	public ColumnProperty getColumnProperty() {
-		return columnProperty;
-	}
+    public CustomExpression getExpressionToGroupBy() {
+        return expressionToGroupBy;
+    }
 
-	public void setColumnProperty(ColumnProperty columnProperty) {
-		this.columnProperty = columnProperty;
-	}
+    /**
+     * Field properties are passed directly to JasperReports JRField
+     */
 
-	public CustomExpression getExpressionToGroupBy() {
-		return expressionToGroupBy;
-	}
+    public String getFieldDescription() {
+        return fieldDescription;
+    }
 
-	public void setExpressionToGroupBy(CustomExpression expressionToGroupBy) {
-		this.expressionToGroupBy = expressionToGroupBy;
-	}
+    @Override
+    public String getGroupVariableName(String type, String columnToGroupByProperty) {
+        return "variable-" + type + "_" + columnToGroupByProperty + "_" + getColumnProperty().getProperty();
+    }
 
-	public String getGroupVariableName(String type, String columnToGroupByProperty) {
-		return "variable-"+type+"_"+columnToGroupByProperty+"_"+getColumnProperty().getProperty();
-	}
+    @Override
+    public String getInitialExpression(DJCalculation op) {
+        if (op == DJCalculation.COUNT || op == DJCalculation.DISTINCT_COUNT) {
+            return "new java.lang.Long(\"0\")";
+        } else if (op == DJCalculation.SUM) {
+            return "new " + getColumnProperty().getValueClassName() + "(\"0\")";
+        } else {
+            return null;
+        }
+    }
 
-	public String getVariableClassName(DJCalculation op) {
-		if (op == DJCalculation.COUNT || op == DJCalculation.DISTINCT_COUNT)
-			return Long.class.getName();
-		else
-			return getColumnProperty().getValueClassName();
-	}
+    @Override
+    public String getVariableClassName(DJCalculation op) {
+        if (op == DJCalculation.COUNT || op == DJCalculation.DISTINCT_COUNT) {
+            return Long.class.getName();
+        } else {
+            return getColumnProperty().getValueClassName();
+        }
+    }
 
-	public String getInitialExpression(DJCalculation op) {
-		if (op == DJCalculation.COUNT  || op == DJCalculation.DISTINCT_COUNT)
-			return "new java.lang.Long(\"0\")";
-		else if (op == DJCalculation.SUM)
-			return "new " + getColumnProperty().getValueClassName()+"(\"0\")";
-		else return null;
-	}
+    public void setColumnProperty(ColumnProperty columnProperty) {
+        this.columnProperty = columnProperty;
+    }
+
+    public void setExpressionToGroupBy(CustomExpression expressionToGroupBy) {
+        this.expressionToGroupBy = expressionToGroupBy;
+    }
+
+    public void setFieldDescription(String fieldDescription) {
+        this.fieldDescription = fieldDescription;
+    }
 
 }

@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,38 +15,45 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.util;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.design.JRJdk13Compiler;
-import net.sf.jasperreports.engine.util.JRClassLoader;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.design.JRJdk13Compiler;
+import net.sf.jasperreports.engine.util.JRClassLoader;
+
 /**
- * @author Alejandro Gomez (alejandro.gomez@fdvsolutions.com)
- *         Date: Oct 8, 2007
+ * @author Alejandro Gomez (alejandro.gomez@fdvsolutions.com) Date: Oct 8, 2007
  *         Time: 10:41:27 AM
  */
 public class DJJRJdk13Compiler extends JRJdk13Compiler {
 
     private static final int MODERN_COMPILER_SUCCESS = 0;
+
+    public static boolean isValid() {
+        try {
+            return JRClassLoader.loadClassForName("com.sun.tools.javac.Main") != null;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
+    }
 
     /**
      * @param jasperReportsContext
@@ -55,6 +62,7 @@ public class DJJRJdk13Compiler extends JRJdk13Compiler {
         super(jasperReportsContext);
     }
 
+    @Override
     public String compileClasses(File[] sourceFiles, String classpath) throws JRException {
         String[] source = new String[sourceFiles.length + 4];
         for (int i = 0; i < sourceFiles.length; i++) {
@@ -66,7 +74,6 @@ public class DJJRJdk13Compiler extends JRJdk13Compiler {
         source[sourceFiles.length + 3] = System.getProperty("file.encoding");
 
         String errors = null;
-
 
         try {
             Class clazz = JRClassLoader.loadClassForName("com.sun.tools.javac.Main");
@@ -80,17 +87,15 @@ public class DJJRJdk13Compiler extends JRJdk13Compiler {
                 if (result != MODERN_COMPILER_SUCCESS) {
                     errors = baos.toString();
                 }
-            }
-            catch (NoSuchMethodException ex) {
+            } catch (NoSuchMethodException ex) {
                 Method compileMethod = clazz.getMethod("compile", String[].class);
 
-                int result = (Integer) compileMethod.invoke(compiler, new Object[]{source});
+                int result = (Integer) compileMethod.invoke(compiler, new Object[] { source });
                 if (result != MODERN_COMPILER_SUCCESS) {
                     errors = "See error messages above.";
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             StringBuilder files = new StringBuilder();
             for (File sourceFile : sourceFiles) {
                 files.append(sourceFile.getPath());
@@ -100,13 +105,5 @@ public class DJJRJdk13Compiler extends JRJdk13Compiler {
         }
 
         return errors;
-    }
-
-    public static boolean isValid() {
-        try {
-            return JRClassLoader.loadClassForName("com.sun.tools.javac.Main") != null;
-        } catch (ClassNotFoundException ex) {
-            return false;
-        }
     }
 }

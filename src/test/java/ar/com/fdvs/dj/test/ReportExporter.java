@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,43 +15,38 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.HtmlExporter;
-import net.sf.jasperreports.engine.export.JExcelApiExporter;
-import net.sf.jasperreports.engine.export.JRHtmlExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
-import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
-import net.sf.jasperreports.export.HtmlExporterConfiguration;
-import net.sf.jasperreports.export.HtmlExporterOutput;
 import net.sf.jasperreports.export.OutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterConfiguration;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
 public class ReportExporter {
     /**
@@ -73,8 +68,9 @@ public class ReportExporter {
 
         File outputFile = new File(path);
         File parentFile = outputFile.getParentFile();
-        if (parentFile != null)
+        if (parentFile != null) {
             parentFile.mkdirs();
+        }
         FileOutputStream fos = new FileOutputStream(outputFile);
 
         SimpleExporterInput simpleExporterInput = new SimpleExporterInput(jp);
@@ -88,45 +84,14 @@ public class ReportExporter {
         logger.debug("Report exported: " + path);
     }
 
-    public static void exportReportXls(JasperPrint jp, String path, SimpleXlsReportConfiguration configuration) throws JRException, FileNotFoundException {
-        JRXlsExporter exporter = new JRXlsExporter();
-
-        File outputFile = new File(path);
-        File parentFile = outputFile.getParentFile();
-        if (parentFile != null)
-            parentFile.mkdirs();
-        FileOutputStream fos = new FileOutputStream(outputFile);
-
-        exporter.setConfiguration(configuration);
-
-        SimpleExporterInput simpleExporterInput = new SimpleExporterInput(jp);
-        OutputStreamExporterOutput simpleOutputStreamExporterOutput = new SimpleOutputStreamExporterOutput(fos);
-
-        exporter.setExporterInput(simpleExporterInput);
-        exporter.setExporterOutput(simpleOutputStreamExporterOutput);
-
-        exporter.exportReport();
-
-        logger.debug("Xlsx Report exported: " + path);
-    }
-
-    public static void exportReportXls(JasperPrint jp, String path) throws JRException, FileNotFoundException {
-        SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
-        configuration.setDetectCellType(true);
-        configuration.setWhitePageBackground(false);
-        configuration.setIgnoreGraphics(false);
-        configuration.setIgnorePageMargins(true);
-
-        exportReportXls(jp, path, configuration);
-    }
-
     public static void exportReportHtml(JasperPrint jp, String path) throws JRException, FileNotFoundException {
         HtmlExporter exporter = new HtmlExporter();
 
         File outputFile = new File(path);
         File parentFile = outputFile.getParentFile();
-        if (parentFile != null)
+        if (parentFile != null) {
             parentFile.mkdirs();
+        }
         FileOutputStream fos = new FileOutputStream(outputFile);
 
         SimpleExporterInput simpleExporterInput = new SimpleExporterInput(jp);
@@ -141,6 +106,40 @@ public class ReportExporter {
         exporter.exportReport();
 
         logger.debug("HTML Report exported: " + path);
+    }
+
+    public static void exportReportXls(JasperPrint jp, String path) throws JRException, FileNotFoundException {
+        SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
+        configuration.setDetectCellType(true);
+        configuration.setWhitePageBackground(false);
+        configuration.setIgnoreGraphics(false);
+        configuration.setIgnorePageMargins(true);
+
+        exportReportXls(jp, path, configuration);
+    }
+
+    public static void exportReportXls(JasperPrint jp, String path, SimpleXlsReportConfiguration configuration)
+            throws JRException, FileNotFoundException {
+        JRXlsExporter exporter = new JRXlsExporter();
+
+        File outputFile = new File(path);
+        File parentFile = outputFile.getParentFile();
+        if (parentFile != null) {
+            parentFile.mkdirs();
+        }
+        FileOutputStream fos = new FileOutputStream(outputFile);
+
+        exporter.setConfiguration(configuration);
+
+        SimpleExporterInput simpleExporterInput = new SimpleExporterInput(jp);
+        OutputStreamExporterOutput simpleOutputStreamExporterOutput = new SimpleOutputStreamExporterOutput(fos);
+
+        exporter.setExporterInput(simpleExporterInput);
+        exporter.setExporterOutput(simpleOutputStreamExporterOutput);
+
+        exporter.exportReport();
+
+        logger.debug("Xlsx Report exported: " + path);
     }
 
 }

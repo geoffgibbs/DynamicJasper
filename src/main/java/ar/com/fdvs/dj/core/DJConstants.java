@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -33,77 +33,77 @@ import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
 
 /**
- * See value of constants here: 
+ * See value of constants here:
  * http://jasperreports.sourceforge.net/api/constant-values.html
+ * 
  * @author mamana
  *
  */
 public interface DJConstants {
 
-	String HEADER = "header";
-	String FOOTER = "footer";
+    String HEADER = "header";
+    String FOOTER = "footer";
 
-	int SUBREPORT_PARAMETER_MAP_ORIGIN_PARAMETER = 0;
-	int SUBREPORT_PARAMETER_MAP_ORIGIN_FIELD = 1;
+    int SUBREPORT_PARAMETER_MAP_ORIGIN_PARAMETER = 0;
+    int SUBREPORT_PARAMETER_MAP_ORIGIN_FIELD = 1;
 
-	int DATA_SOURCE_ORIGIN_PARAMETER = 0;
-	int DATA_SOURCE_ORIGIN_FIELD = 1;
-	int DATA_SOURCE_ORIGIN_REPORT_DATASOURCE = 2;
-	int DATA_SOURCE_ORIGIN_USE_REPORT_CONNECTION = 10;
+    int DATA_SOURCE_ORIGIN_PARAMETER = 0;
+    int DATA_SOURCE_ORIGIN_FIELD = 1;
+    int DATA_SOURCE_ORIGIN_REPORT_DATASOURCE = 2;
+    int DATA_SOURCE_ORIGIN_USE_REPORT_CONNECTION = 10;
 
-	int DATA_SOURCE_TYPE_COLLECTION 			= 0;
-	int DATA_SOURCE_TYPE_ARRAY 					= 1;
-	int DATA_SOURCE_TYPE_JPA 					= 2;
-	int DATA_SOURCE_TYPE_RESULTSET				= 3;
-	int DATA_SOURCE_TYPE_XML					= 4;
-	int DATA_SOURCE_TYPE_HIBERNATE_ITERATE		= 5;
-	int DATA_SOURCE_TYPE_HIBERNATE_LIST			= 5;
-	int DATA_SOURCE_TYPE_HIBERNATE_SCROLL		= 6;
-	int DATA_SOURCE_TYPE_CSV					= 7;
-	int DATA_SOURCE_TYPE_MONDRIAN				= 8;
-	int DATA_SOURCE_TYPE_OGNL_VALUE_STACK		= 9;
-	int DATA_SOURCE_TYPE_JRDATASOURCE			= 10;
+    int DATA_SOURCE_TYPE_COLLECTION = 0;
+    int DATA_SOURCE_TYPE_ARRAY = 1;
+    int DATA_SOURCE_TYPE_JPA = 2;
+    int DATA_SOURCE_TYPE_RESULTSET = 3;
+    int DATA_SOURCE_TYPE_XML = 4;
+    int DATA_SOURCE_TYPE_HIBERNATE_ITERATE = 5;
+    int DATA_SOURCE_TYPE_HIBERNATE_LIST = 5;
+    int DATA_SOURCE_TYPE_HIBERNATE_SCROLL = 6;
+    int DATA_SOURCE_TYPE_CSV = 7;
+    int DATA_SOURCE_TYPE_MONDRIAN = 8;
+    int DATA_SOURCE_TYPE_OGNL_VALUE_STACK = 9;
+    int DATA_SOURCE_TYPE_JRDATASOURCE = 10;
 
-	int DATA_SOURCE_TYPE_SQL_CONNECTION			= 100; //This is in DJ only, not in JasperReports
+    int DATA_SOURCE_TYPE_SQL_CONNECTION = 100; // This is in DJ only, not in JasperReports
 
-	int COLOR_SCHEMA_WHITE = 0;
-	int COLOR_SCHEMA_VIOLET = 1;
-	int COLOR_SCHEMA_PINK = 2;
-	int COLOR_SCHEMA_PINK_AND_BROWN = 3;
-	int COLOR_SCHEMA_LIGHT_GREEN = 4;
-	int COLOR_SCHEMA_BLUE = 5;
-	int COLOR_SCHEMA_GRAY = 6;
+    int COLOR_SCHEMA_WHITE = 0;
+    int COLOR_SCHEMA_VIOLET = 1;
+    int COLOR_SCHEMA_PINK = 2;
+    int COLOR_SCHEMA_PINK_AND_BROWN = 3;
+    int COLOR_SCHEMA_LIGHT_GREEN = 4;
+    int COLOR_SCHEMA_BLUE = 5;
+    int COLOR_SCHEMA_GRAY = 6;
 
-	String QUERY_LANGUAGE_SQL = "sql";
-	String QUERY_LANGUAGE_EJBQL = "ejbql";
-	String QUERY_LANGUAGE_HQL = "hql";
-	String QUERY_LANGUAGE_XPATH = "xPath";
-	String QUERY_LANGUAGE_MONDRIAN = "mdx";
+    String QUERY_LANGUAGE_SQL = "sql";
+    String QUERY_LANGUAGE_EJBQL = "ejbql";
+    String QUERY_LANGUAGE_HQL = "hql";
+    String QUERY_LANGUAGE_XPATH = "xPath";
+    String QUERY_LANGUAGE_MONDRIAN = "mdx";
 
-	byte WHEN_NO_DATA_TYPE_NO_PAGES = WhenNoDataTypeEnum.NO_PAGES.getValue();
-	byte WHEN_NO_DATA_TYPE_BLANK_PAGE = WhenNoDataTypeEnum.BLANK_PAGE.getValue();
-	byte WHEN_NO_DATA_TYPE_ALL_SECTIONS_NO_DETAIL = WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL.getValue();
-	byte WHEN_NO_DATA_TYPE_NO_DATA_SECTION = WhenNoDataTypeEnum.NO_DATA_SECTION.getValue();
+    byte WHEN_NO_DATA_TYPE_NO_PAGES = WhenNoDataTypeEnum.NO_PAGES.getValue();
+    byte WHEN_NO_DATA_TYPE_BLANK_PAGE = WhenNoDataTypeEnum.BLANK_PAGE.getValue();
+    byte WHEN_NO_DATA_TYPE_ALL_SECTIONS_NO_DETAIL = WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL.getValue();
+    byte WHEN_NO_DATA_TYPE_NO_DATA_SECTION = WhenNoDataTypeEnum.NO_DATA_SECTION.getValue();
 
-	byte WHEN_RESOURCE_MISSING_TYPE_EMPTY = WhenResourceMissingTypeEnum.EMPTY.getValue();
-	byte WHEN_RESOURCE_MISSING_TYPE_ERROR = WhenResourceMissingTypeEnum.ERROR.getValue();
-	byte WHEN_RESOURCE_MISSING_TYPE_KEY = WhenResourceMissingTypeEnum.KEY.getValue();
-	byte WHEN_RESOURCE_MISSING_TYPE_NULL = WhenResourceMissingTypeEnum.NULL.getValue();
+    byte WHEN_RESOURCE_MISSING_TYPE_EMPTY = WhenResourceMissingTypeEnum.EMPTY.getValue();
+    byte WHEN_RESOURCE_MISSING_TYPE_ERROR = WhenResourceMissingTypeEnum.ERROR.getValue();
+    byte WHEN_RESOURCE_MISSING_TYPE_KEY = WhenResourceMissingTypeEnum.KEY.getValue();
+    byte WHEN_RESOURCE_MISSING_TYPE_NULL = WhenResourceMissingTypeEnum.NULL.getValue();
 
-	int SUBREPORT_PARAM_ORIGIN_FIELD = 1;
-	int SUBREPORT_PARAM_ORIGIN_PARAMETER = 2;
-	int SUBREPORT_PARAM_ORIGIN_VARIABLE = 3;
-	int SUBREPORT_PARAM_ORIGIN_CUSTOM = 4; //write your own expression
+    int SUBREPORT_PARAM_ORIGIN_FIELD = 1;
+    int SUBREPORT_PARAM_ORIGIN_PARAMETER = 2;
+    int SUBREPORT_PARAM_ORIGIN_VARIABLE = 3;
+    int SUBREPORT_PARAM_ORIGIN_CUSTOM = 4; // write your own expression
 
-	String CUSTOM_EXPRESSION__PARAMETERS_MAP = "REPORT_PARAMETERS_MAP";
-	
-	String FORMAT_CSV = "CSV";
-	String FORMAT_HTML = "HTML";
-	String FORMAT_PDF = "PDF";
-	String FORMAT_XLS = "XLS";
-	String FORMAT_XML = "XML";
-	String FORMAT_RTF = "RTF";
+    String CUSTOM_EXPRESSION__PARAMETERS_MAP = "REPORT_PARAMETERS_MAP";
 
+    String FORMAT_CSV = "CSV";
+    String FORMAT_HTML = "HTML";
+    String FORMAT_PDF = "PDF";
+    String FORMAT_XLS = "XLS";
+    String FORMAT_XML = "XML";
+    String FORMAT_RTF = "RTF";
 
     String REPORT_LANGUAGE_JAVA = "java";
     String REPORT_LANGUAGE_GROOVY = "groovy";

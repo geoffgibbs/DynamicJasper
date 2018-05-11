@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,133 +15,119 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.domain;
 
-import ar.com.fdvs.dj.domain.entities.Entity;
-import ar.com.fdvs.dj.domain.entities.conditionalStyle.ConditionalStyle;
-import ar.com.fdvs.dj.util.ExpressionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ar.com.fdvs.dj.domain.entities.Entity;
+import ar.com.fdvs.dj.domain.entities.conditionalStyle.ConditionalStyle;
+import ar.com.fdvs.dj.util.ExpressionUtils;
 
 public class DJCrosstabMeasure extends DJBaseElement {
-	/**
-	 * Logger for this class
-	 */
-	private static final Log logger = LogFactory.getLog(DJCrosstabMeasure.class);
+    /**
+     * Logger for this class
+     */
+    private static final Log logger = LogFactory.getLog(DJCrosstabMeasure.class);
 
-	/**
-	 * Logger for this class
-	 */
+    /**
+     * Logger for this class
+     */
 
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
-	
-	private ColumnProperty property;
-	private DJCalculation operation;
-	private String title;
-	private List<ConditionalStyle> conditionalStyles = new ArrayList<ConditionalStyle>();
-	private DJValueFormatter valueFormatter;
-	private DJCRosstabMeasurePrecalculatedTotalProvider precalculatedTotalProvider;
-	private Boolean isPercentage = Boolean.FALSE;
-	private Boolean visible = Boolean.TRUE;
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
 
-	private Style style;
-	
-	private DJHyperLink link;
+    private ColumnProperty property;
+    private DJCalculation operation;
+    private String title;
+    private List<ConditionalStyle> conditionalStyles = new ArrayList<ConditionalStyle>();
+    private DJValueFormatter valueFormatter;
+    private DJCRosstabMeasurePrecalculatedTotalProvider precalculatedTotalProvider;
+    private Boolean isPercentage = Boolean.FALSE;
+    private Boolean visible = Boolean.TRUE;
 
-	public Style getStyle() {
-		return style;
-	}
+    private Style style;
 
-	public void setStyle(Style style) {
-		this.style = style;
-	}
+    private DJHyperLink link;
 
-	public List<ConditionalStyle> getConditionalStyles() {
-		return conditionalStyles;
-	}
+    public DJCrosstabMeasure() {
+        super();
+    }
 
-	public void setConditionalStyles(List<ConditionalStyle> conditionalStyles) {
-		this.conditionalStyles = conditionalStyles;
-	}
-	
-	public DJCrosstabMeasure(String propertyName, String className, DJCalculation operation, String title) {
-		super();
-		this.property = new ColumnProperty(propertyName, className);
-		this.operation = operation;
-		this.title = title;
-	}
+    public DJCrosstabMeasure(ColumnProperty measure, DJCalculation operation, String title) {
+        super();
+        property = measure;
+        this.operation = operation;
+        this.title = title;
+    }
 
-	public DJCrosstabMeasure(ColumnProperty measure, DJCalculation operation, String title) {
-		super();
-		this.property = measure;
-		this.operation = operation;
-		this.title = title;
-	}
+    public DJCrosstabMeasure(String propertyName, String className, DJCalculation operation, String title) {
+        super();
+        property = new ColumnProperty(propertyName, className);
+        this.operation = operation;
+        this.title = title;
+    }
 
-	public DJCrosstabMeasure() {
-		super();
-	}
+    public List<ConditionalStyle> getConditionalStyles() {
+        return conditionalStyles;
+    }
 
-	public ColumnProperty getProperty() {
-		return property;
-	}
-	public void setProperty(ColumnProperty measure) {
-		this.property = measure;
-	}
-	public DJCalculation getOperation() {
-		return operation;
-	}
-	public void setOperation(DJCalculation operation) {
-		this.operation = operation;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public Boolean getIsPercentage() {
+        return isPercentage;
+    }
 
-	public DJHyperLink getLink() {
-		return link;
-	}
+    public DJHyperLink getLink() {
+        return link;
+    }
 
-	public void setLink(DJHyperLink link) {
-		this.link = link;
-	}
+    public String getMeasureIdentifier(int idx) {
+        String measurePrefix = getMeasurePrefix(idx);
+        return measurePrefix + getProperty().getProperty();
+    }
 
-	public DJValueFormatter getValueFormatter() {
-		return valueFormatter;
-	}
+    public String getMeasurePrefix(int idx) {
+        return "idx" + idx + "_";
+    }
 
-	public void setValueFormatter(DJValueFormatter valueFormatter) {
-		this.valueFormatter = valueFormatter;
-	}
+    public DJCalculation getOperation() {
+        return operation;
+    }
 
-	public String getTextForValueFormatterExpression(String variableName, List<DJCrosstabMeasure> measures) {
-       String stringExpression;
+    public DJCRosstabMeasurePrecalculatedTotalProvider getPrecalculatedTotalProvider() {
+        return precalculatedTotalProvider;
+    }
+
+    public ColumnProperty getProperty() {
+        return property;
+    }
+
+    public Style getStyle() {
+        return style;
+    }
+
+    public String getTextForValueFormatterExpression(String variableName, List<DJCrosstabMeasure> measures) {
+        String stringExpression;
         String fieldsMap = ExpressionUtils.getTextForFieldsFromScriptlet();
         String parametersMap = ExpressionUtils.getTextForParametersFromScriptlet();
         String variablesMap = ExpressionUtils.getTextForVariablesFromScriptlet();
-        if (this.getValueFormatter() instanceof DjBaseMMValueFormatter){
+        if (getValueFormatter() instanceof DjBaseMMValueFormatter) {
 
-            DjBaseMMValueFormatter formatter = DjBaseMMValueFormatter.class.cast(this.getValueFormatter());
+            DjBaseMMValueFormatter formatter = DjBaseMMValueFormatter.class.cast(getValueFormatter());
             String[] propertyMeasures = new String[measures.size()];
 
             int i = 0;
@@ -153,64 +139,82 @@ public class DJCrosstabMeasure extends DJBaseElement {
             formatter.setPropertyMeasures(propertyMeasures);
 
             String rowValuesExp = "new Object[]{";
-            int measureIdx=0;
+            int measureIdx = 0;
             for (Iterator iterator = measures.iterator(); iterator.hasNext(); measureIdx++) {
                 DJCrosstabMeasure djmeasure = (DJCrosstabMeasure) iterator.next();
 
-                if (djmeasure.getProperty()== null){
+                if (djmeasure.getProperty() == null) {
                     continue;
                 }
 
-                rowValuesExp += "$V{" +djmeasure.getMeasureIdentifier(measureIdx) +"}";
+                rowValuesExp += "$V{" + djmeasure.getMeasureIdentifier(measureIdx) + "}";
                 rowValuesExp += ", ";
             }
 
-            //chop the last comma
-            rowValuesExp = rowValuesExp.substring(0,rowValuesExp.length()-2);
+            // chop the last comma
+            rowValuesExp = rowValuesExp.substring(0, rowValuesExp.length() - 2);
             rowValuesExp += "}";
-            stringExpression = "((("+DjBaseMMValueFormatter.class.getName()+")$P{crosstab-measure__"+variableName+"_vf}).evaluate( "
-                        + rowValuesExp + ", " + fieldsMap +", " + variablesMap + ", " + parametersMap +" ))";
-       }
-        else {
+            stringExpression = "(((" + DjBaseMMValueFormatter.class.getName() + ")$P{crosstab-measure__" + variableName
+                    + "_vf}).evaluate( " + rowValuesExp + ", " + fieldsMap + ", " + variablesMap + ", " + parametersMap
+                    + " ))";
+        } else {
 
-             stringExpression = "((("+DJValueFormatter.class.getName()+")$P{crosstab-measure__"+variableName+"_vf}).evaluate( "
-                    + "$V{"+variableName+"}, " + fieldsMap +", " + variablesMap + ", " + parametersMap +" ))";
+            stringExpression = "(((" + DJValueFormatter.class.getName() + ")$P{crosstab-measure__" + variableName
+                    + "_vf}).evaluate( " + "$V{" + variableName + "}, " + fieldsMap + ", " + variablesMap + ", "
+                    + parametersMap + " ))";
         }
 
         logger.debug("Expression for crosstab DJValueFormatter = " + stringExpression);
 
-		return stringExpression;
-	}
-
-    public String getMeasureIdentifier(int idx) {
-        String measurePrefix = this.getMeasurePrefix(idx);
-		return measurePrefix + this.getProperty().getProperty();
+        return stringExpression;
     }
 
-    public String getMeasurePrefix(int idx) {
-        return "idx" + idx + "_";
+    public String getTitle() {
+        return title;
     }
 
-	public DJCRosstabMeasurePrecalculatedTotalProvider getPrecalculatedTotalProvider() {
-		return precalculatedTotalProvider;
-	}
-
-	public void setPrecalculatedTotalProvider(
-			DJCRosstabMeasurePrecalculatedTotalProvider precalculatedTotalProvider) {
-		this.precalculatedTotalProvider = precalculatedTotalProvider;
-	}
-
-	public Boolean getIsPercentage() {
-		return isPercentage;
-	}
-
-	public void setIsPercentage(Boolean isPercentage) {
-		this.isPercentage = isPercentage;
-	}
-
+    public DJValueFormatter getValueFormatter() {
+        return valueFormatter;
+    }
 
     public Boolean getVisible() {
         return visible;
+    }
+
+    public void setConditionalStyles(List<ConditionalStyle> conditionalStyles) {
+        this.conditionalStyles = conditionalStyles;
+    }
+
+    public void setIsPercentage(Boolean isPercentage) {
+        this.isPercentage = isPercentage;
+    }
+
+    public void setLink(DJHyperLink link) {
+        this.link = link;
+    }
+
+    public void setOperation(DJCalculation operation) {
+        this.operation = operation;
+    }
+
+    public void setPrecalculatedTotalProvider(DJCRosstabMeasurePrecalculatedTotalProvider precalculatedTotalProvider) {
+        this.precalculatedTotalProvider = precalculatedTotalProvider;
+    }
+
+    public void setProperty(ColumnProperty measure) {
+        property = measure;
+    }
+
+    public void setStyle(Style style) {
+        this.style = style;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setValueFormatter(DJValueFormatter valueFormatter) {
+        this.valueFormatter = valueFormatter;
     }
 
     public void setVisible(Boolean visible) {

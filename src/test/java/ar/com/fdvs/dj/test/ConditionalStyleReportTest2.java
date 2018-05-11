@@ -5,6 +5,19 @@
 
 package ar.com.fdvs.dj.test;
 
+import java.awt.Color;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import junit.framework.TestCase;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+
 import ar.com.fdvs.dj.core.DynamicJasperHelper;
 import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
 import ar.com.fdvs.dj.core.layout.LayoutManager;
@@ -22,82 +35,42 @@ import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
 import ar.com.fdvs.dj.domain.entities.conditionalStyle.ConditionStyleExpression;
 import ar.com.fdvs.dj.domain.entities.conditionalStyle.ConditionalStyle;
-import junit.framework.TestCase;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
-import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
-
-import java.awt.Color;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author rve
  */
 public class ConditionalStyleReportTest2 extends TestCase {
-    private DynamicReportBuilder drb;
+    private class FicheCondition extends ConditionStyleExpression implements CustomExpression {
+        private String fieldName;
+        private String colorValue;
 
-    public DynamicReport buildDynamicReport() {
-        return drb.build();
-    }
+        public FicheCondition(String fieldName, String colorValue) {
+            this.fieldName = fieldName;
+            this.colorValue = colorValue;
+        }
 
-    public ConditionalStyleReportTest2() {
-        try {
-            drb = new DynamicReportBuilder();
-            drb.setGrandTotalLegend("Total");
-            drb.setPageSizeAndOrientation(new Page(585, 842));
-            drb.setUseFullPageWidth(true);
-            drb.setAllowDetailSplit(false);
-            drb.setWhenNoData("No data", null, true, true);
-            //drb.setReportName("Test inner crosstab");
-            ArrayList listCondStyle = getConditonalStyles();
-            AbstractColumn columnState1 = ColumnBuilder.getNew()
-                    .setColumnProperty("1", Integer.class.getName()).setTitle("Sales")
-                    .setHeaderStyle(getHeaderStyle()).setStyle(getDataStyle())
-                    .addConditionalStyles(listCondStyle)
-                    .build();
-            drb.addColumn(columnState1);
+        @Override
+        public Object evaluate(Map fields, Map variables, Map parameters) {
+            boolean condition = false;
+            Object currentValue = fields.get(fieldName);
+            if (currentValue instanceof String) {
+                condition = colorValue.equals(currentValue);
+            }
+            return condition;
+        }
 
-            AbstractColumn columnState2 = ColumnBuilder.getNew()
-                    .setColumnProperty("2", String.class.getName()).setTitle("Year")
-                    .setHeaderStyle(getHeaderStyle()).setStyle(getDataStyle())
-                    .addConditionalStyles(listCondStyle)
-                    .build();
-            drb.addColumn(columnState2);
-
-            drb.addField("3", Boolean.class.getName());
-
-        } catch (ColumnBuilderException ex) {
-            ex.printStackTrace();
-            drb = null;
+        @Override
+        public String getClassName() {
+            return Boolean.class.getName();
         }
     }
 
-    private static Style getRedStyle() {
-        Style alertStyle = new Style();
-        alertStyle.setTransparency(Transparency.OPAQUE);
-        alertStyle.setBackgroundColor(Color.RED);
-        alertStyle.setTextColor(Color.BLACK);
-        alertStyle.setVerticalAlign(VerticalAlign.TOP);
-        return alertStyle;
-    }
-
-    private static Style getBlueStyle() {
-        Style alertStyle = new Style();
-        alertStyle.setTransparency(Transparency.OPAQUE);
-        alertStyle.setBackgroundColor(Color.BLUE);
-        alertStyle.setTextColor(Color.BLACK);
-        alertStyle.setVerticalAlign(VerticalAlign.TOP);
-        return alertStyle;
+    private static Style getDataStyle() {
+        Style dataStyle = new Style();
+        dataStyle.setTransparency(Transparency.TRANSPARENT);
+        dataStyle.setTextColor(Color.BLACK);
+        dataStyle.setVerticalAlign(VerticalAlign.TOP);
+        return dataStyle;
     }
 
     private static Style getGrayStyle() {
@@ -118,24 +91,6 @@ public class ConditionalStyleReportTest2 extends TestCase {
         return alertStyle;
     }
 
-    private static Style getYellowStyle() {
-        Style alertStyle = new Style();
-        alertStyle.setTransparency(Transparency.OPAQUE);
-        alertStyle.setBackgroundColor(Color.YELLOW);
-        alertStyle.setTextColor(Color.BLACK);
-        alertStyle.setVerticalAlign(VerticalAlign.TOP);
-        return alertStyle;
-    }
-
-    private static Style getOrangeStyle() {
-        Style alertStyle = new Style();
-        alertStyle.setTransparency(Transparency.OPAQUE);
-        alertStyle.setBackgroundColor(Color.ORANGE);
-        alertStyle.setTextColor(Color.BLACK);
-        alertStyle.setVerticalAlign(VerticalAlign.TOP);
-        return alertStyle;
-    }
-
     private static Style getHeaderStyle() {
         Style headerStyle = new Style();
         headerStyle.setFont(Font.ARIAL_MEDIUM_BOLD);
@@ -148,12 +103,8 @@ public class ConditionalStyleReportTest2 extends TestCase {
         return headerStyle;
     }
 
-    private static Style getDataStyle() {
-        Style dataStyle = new Style();
-        dataStyle.setTransparency(Transparency.TRANSPARENT);
-        dataStyle.setTextColor(Color.BLACK);
-        dataStyle.setVerticalAlign(VerticalAlign.TOP);
-        return dataStyle;
+    public static LayoutManager getLayoutManager() {
+        return new ClassicLayoutManager();
     }
 
     public static List getList() {
@@ -186,6 +137,54 @@ public class ConditionalStyleReportTest2 extends TestCase {
         return list;
     }
 
+    private static Style getRedStyle() {
+        Style alertStyle = new Style();
+        alertStyle.setTransparency(Transparency.OPAQUE);
+        alertStyle.setBackgroundColor(Color.RED);
+        alertStyle.setTextColor(Color.BLACK);
+        alertStyle.setVerticalAlign(VerticalAlign.TOP);
+        return alertStyle;
+    }
+
+    public static void main(String[] args) throws Exception {
+        ConditionalStyleReportTest2 test = new ConditionalStyleReportTest2();
+        test.test();
+    }
+
+    private DynamicReportBuilder drb;
+
+    public ConditionalStyleReportTest2() {
+        try {
+            drb = new DynamicReportBuilder();
+            drb.setGrandTotalLegend("Total");
+            drb.setPageSizeAndOrientation(new Page(585, 842));
+            drb.setUseFullPageWidth(true);
+            drb.setAllowDetailSplit(false);
+            drb.setWhenNoData("No data", null, true, true);
+            // drb.setReportName("Test inner crosstab");
+            ArrayList listCondStyle = getConditonalStyles();
+            AbstractColumn columnState1 = ColumnBuilder.getNew().setColumnProperty("1", Integer.class.getName())
+                    .setTitle("Sales").setHeaderStyle(getHeaderStyle()).setStyle(getDataStyle())
+                    .addConditionalStyles(listCondStyle).build();
+            drb.addColumn(columnState1);
+
+            AbstractColumn columnState2 = ColumnBuilder.getNew().setColumnProperty("2", String.class.getName())
+                    .setTitle("Year").setHeaderStyle(getHeaderStyle()).setStyle(getDataStyle())
+                    .addConditionalStyles(listCondStyle).build();
+            drb.addColumn(columnState2);
+
+            drb.addField("3", Boolean.class.getName());
+
+        } catch (ColumnBuilderException ex) {
+            ex.printStackTrace();
+            drb = null;
+        }
+    }
+
+    public DynamicReport buildDynamicReport() {
+        return drb.build();
+    }
+
     private ArrayList getConditonalStyles() {
         ArrayList conditionalStyles = new ArrayList();
         FicheCondition fc = new FicheCondition("3", "Rouge");
@@ -206,62 +205,35 @@ public class ConditionalStyleReportTest2 extends TestCase {
         return conditionalStyles;
     }
 
-    private class FicheCondition extends ConditionStyleExpression implements CustomExpression {
-        private String fieldName;
-        private String colorValue;
-
-        public FicheCondition(String fieldName, String colorValue) {
-            this.fieldName = fieldName;
-            this.colorValue = colorValue;
-        }
-
-        public Object evaluate(Map fields, Map variables, Map parameters) {
-            boolean condition = false;
-            Object currentValue = fields.get(fieldName);
-            if (currentValue instanceof String) {
-                String s = (String) currentValue;
-                condition = colorValue.equals(currentValue);
-            }
-            return condition;
-        }
-
-        public String getClassName() {
-            return Boolean.class.getName();
-        }
-    }
-
-    public static LayoutManager getLayoutManager() {
-        return new ClassicLayoutManager();
-    }
-
     public void test() throws JRException, FileNotFoundException {
         ConditionalStyleReportTest2 db = new ConditionalStyleReportTest2();
         List list = getList();
         DynamicReport dynamicReport = db.buildDynamicReport();
         JRDataSource ds = new JRBeanCollectionDataSource(list);
         JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dynamicReport, getLayoutManager(), ds);
-/*        JRXlsExporter exporter = new JRXlsExporter();
+        /*
+         * JRXlsExporter exporter = new JRXlsExporter();
+         * 
+         * File outputFile = new File(System.getProperty("user.dir") + "/target/" +
+         * this.getClass().getName() + ".xls"); FileOutputStream fos = new
+         * FileOutputStream(outputFile);
+         * 
+         * exporter.setParameter(JRExporterParameter.JASPER_PRINT, jp);
+         * exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, fos); //and output
+         * stream
+         * 
+         * //Excel specific parameter
+         * exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET,
+         * Boolean.FALSE); exporter.setParameter(JRXlsExporterParameter.
+         * IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+         * exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND,
+         * Boolean.FALSE);
+         * 
+         * exporter.exportReport();
+         */
 
-        File outputFile = new File(System.getProperty("user.dir") + "/target/" + this.getClass().getName() + ".xls");
-        FileOutputStream fos = new FileOutputStream(outputFile);
+        ReportExporter.exportReportXls(jp,
+                System.getProperty("user.dir") + "/target/reports/" + this.getClass().getSimpleName() + ".xls");
 
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jp);
-        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, fos); //and output stream
-
-        //Excel specific parameter
-        exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
-        exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
-        exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
-
-        exporter.exportReport();*/
-
-        ReportExporter.exportReportXls(jp, System.getProperty("user.dir") + "/target/reports/" + this.getClass().getSimpleName() + ".xls");
-
-
-    }
-
-    public static void main(String[] args) throws Exception {
-        ConditionalStyleReportTest2 test = new ConditionalStyleReportTest2();
-        test.test();
     }
 }

@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,199 +15,168 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.test.crosstab;
 
-
-import ar.com.fdvs.dj.core.DJConstants;
-import ar.com.fdvs.dj.domain.*;
-import ar.com.fdvs.dj.domain.builders.CrosstabBuilder;
-import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
-import ar.com.fdvs.dj.domain.builders.StyleBuilder;
-import ar.com.fdvs.dj.domain.constants.*;
-import ar.com.fdvs.dj.domain.constants.Font;
-import ar.com.fdvs.dj.domain.constants.Transparency;
-import ar.com.fdvs.dj.test.BaseDjReportTest;
-import ar.com.fdvs.dj.test.TestRepositoryProducts;
-import ar.com.fdvs.dj.util.SortUtils;
-import net.sf.jasperreports.view.JasperDesignViewer;
-import net.sf.jasperreports.view.JasperViewer;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.Date;
 import java.util.Map;
 
+import net.sf.jasperreports.view.JasperDesignViewer;
+import net.sf.jasperreports.view.JasperViewer;
+
+import ar.com.fdvs.dj.core.DJConstants;
+import ar.com.fdvs.dj.domain.DJCalculation;
+import ar.com.fdvs.dj.domain.DJCrosstab;
+import ar.com.fdvs.dj.domain.DjBaseMMValueFormatter;
+import ar.com.fdvs.dj.domain.DynamicReport;
+import ar.com.fdvs.dj.domain.Style;
+import ar.com.fdvs.dj.domain.builders.CrosstabBuilder;
+import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
+import ar.com.fdvs.dj.domain.builders.StyleBuilder;
+import ar.com.fdvs.dj.domain.constants.Border;
+import ar.com.fdvs.dj.domain.constants.Font;
+import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import ar.com.fdvs.dj.domain.constants.Page;
+import ar.com.fdvs.dj.domain.constants.Transparency;
+import ar.com.fdvs.dj.domain.constants.VerticalAlign;
+import ar.com.fdvs.dj.test.BaseDjReportTest;
+import ar.com.fdvs.dj.test.TestRepositoryProducts;
+import ar.com.fdvs.dj.util.SortUtils;
+
 public class CrosstabReportWithInvisibleMeasure extends BaseDjReportTest {
 
-	private Style totalColHeaderStyle;
-	private Style totalRowHeaderStyle;
+    public static String getAsMinutes(Long value) {
+        if (value == null) {
+            return null;
+        }
+        Long amount = value;
+        int sec = amount.intValue() % 60;
+        int mins = amount.intValue() / 60;
+        return mins + "' " + sec + "\"";
+    }
 
-	private Style colHeaderStyle;
-	private Style rowHeaderStyle;
+    public static void main(String[] args) throws Exception {
+        CrosstabReportWithInvisibleMeasure test = new CrosstabReportWithInvisibleMeasure();
+        test.testReport();
+        JasperViewer.viewReport(test.jp); // finally display the report report
+        JasperDesignViewer.viewReportDesign(test.jr);
+    }
 
-	private Style mainHeaderStyle;
-	private Style totalColStyle;
-	private Style totalRowStyle;
+    private Style totalColHeaderStyle;
+    private Style totalRowHeaderStyle;
+
+    private Style colHeaderStyle;
+    private Style rowHeaderStyle;
+    private Style mainHeaderStyle;
+
+    private Style totalColStyle;
+    private Style totalRowStyle;
 
     private Style measureStyle2;
-	private Style titleStyle;
 
-	public DynamicReport buildReport() throws Exception {
-		initStyles(); //init some styles to be used
+    private Style titleStyle;
 
-		/*
-		  Create an empty report (no columns)!
-		 */
-		FastReportBuilder drb = new FastReportBuilder();
-			drb
-			.setTitle("November " + getYear() +" sales report")
-			.setSubtitle("This report was generated at " + new Date())
-			.setPageSizeAndOrientation(Page.Page_A4_Landscape())
-			.setPrintColumnNames(false)
-			.setUseFullPageWidth(true)
-			.setDefaultStyles(titleStyle, null, null, null);
+    @Override
+    public DynamicReport buildReport() throws Exception {
+        initStyles(); // init some styles to be used
 
-		DJCrosstab djcross = new CrosstabBuilder()
-			.setHeight(200)
-			.setWidth(500)
-			.setHeaderStyle(mainHeaderStyle)
-			.setDatasource("sr", DJConstants.DATA_SOURCE_ORIGIN_PARAMETER, DJConstants.DATA_SOURCE_TYPE_COLLECTION)
-			.setUseFullWidth(true)
-			.setColorScheme(DJConstants.COLOR_SCHEMA_GRAY)
-			.setAutomaticTitle(true)
-			.setCellBorder(Border.PEN_1_POINT())
-                .addRow("Branch", "branch", String.class.getName(), true)
+        /*
+         * Create an empty report (no columns)!
+         */
+        FastReportBuilder drb = new FastReportBuilder();
+        drb.setTitle("November " + getYear() + " sales report")
+                .setSubtitle("This report was generated at " + new Date())
+                .setPageSizeAndOrientation(Page.Page_A4_Landscape()).setPrintColumnNames(false)
+                .setUseFullPageWidth(true).setDefaultStyles(titleStyle, null, null, null);
+
+        DJCrosstab djcross = new CrosstabBuilder().setHeight(200).setWidth(500).setHeaderStyle(mainHeaderStyle)
+                .setDatasource("sr", DJConstants.DATA_SOURCE_ORIGIN_PARAMETER, DJConstants.DATA_SOURCE_TYPE_COLLECTION)
+                .setUseFullWidth(true).setColorScheme(DJConstants.COLOR_SCHEMA_GRAY).setAutomaticTitle(true)
+                .setCellBorder(Border.PEN_1_POINT()).addRow("Branch", "branch", String.class.getName(), true)
                 .addRow("Product Line", "productLine", String.class.getName(), true)
-            .addColumn("State", "state", String.class.getName(), true)
-            .addColumn("Item", "item", String.class.getName(),true)
-            //this measure won't be displayed. The actual function of this measure is to decide how to format a visible measure
-			.addInvisibleMeasure("showAsPrices", Boolean.class.getName(), "showAsPrices")
+                .addColumn("State", "state", String.class.getName(), true)
+                .addColumn("Item", "item", String.class.getName(), true)
+                // this measure won't be displayed. The actual function of this measure is to
+                // decide how to format a visible measure
+                .addInvisibleMeasure("showAsPrices", Boolean.class.getName(), "showAsPrices")
 
-			.addMeasure("quantity", Long.class.getName(), DJCalculation.SUM, "Time", measureStyle2, new DjBaseMMValueFormatter() {
+                .addMeasure("quantity", Long.class.getName(), DJCalculation.SUM, "Time", measureStyle2,
+                        new DjBaseMMValueFormatter() {
 
-                public String getClassName() {
-                    return String.class.getName();
-                }
+                            @Override
+                            public String getClassName() {
+                                return String.class.getName();
+                            }
 
-                public Object innerEvaluate(Object[] values, Map fields, Map variables, Map parameters) {
-                    Boolean measureDecisor = this.getValueFor(values, "showAsPrices");
-                    Long val = this.getValueFor(values, "quantity");
-                    if (measureDecisor == null) {
-                        measureDecisor = Boolean.TRUE;
-                    }
-                    return measureDecisor ? val.toString() : "$" + val;
-                }
-            })
-			.setRowStyles(rowHeaderStyle, totalRowStyle, totalRowHeaderStyle)
-			.setColumnStyles(colHeaderStyle, totalColStyle, totalColHeaderStyle)
-			.setCellDimension(34, 60)
-			.setColumnHeaderHeight(30)
-			.setRowHeaderWidth(80)
-			.build();
+                            @Override
+                            public Object innerEvaluate(Object[] values, Map fields, Map variables, Map parameters) {
+                                Boolean measureDecisor = this.getValueFor(values, "showAsPrices");
+                                Long val = this.getValueFor(values, "quantity");
+                                if (measureDecisor == null) {
+                                    measureDecisor = Boolean.TRUE;
+                                }
+                                return measureDecisor ? val.toString() : "$" + val;
+                            }
+                        })
+                .setRowStyles(rowHeaderStyle, totalRowStyle, totalRowHeaderStyle)
+                .setColumnStyles(colHeaderStyle, totalColStyle, totalColHeaderStyle).setCellDimension(34, 60)
+                .setColumnHeaderHeight(30).setRowHeaderWidth(80).build();
 
-		drb.addHeaderCrosstab(djcross); //add the crosstab in the header band of the report
+        drb.addHeaderCrosstab(djcross); // add the crosstab in the header band of the report
 
-		DynamicReport dr = drb.build();
+        DynamicReport dr = drb.build();
 
-		//put a collection in the parameters map to be used by the crosstab
-		params.put("sr", SortUtils.sortCollection(TestRepositoryProducts.getDummyCollectionSmall(),djcross));
+        // put a collection in the parameters map to be used by the crosstab
+        params.put("sr", SortUtils.sortCollection(TestRepositoryProducts.getDummyCollectionSmall(), djcross));
 
-		return dr;
-	}
+        return dr;
+    }
 
-	public static String getAsMinutes(Long value) {
-		if (value == null)
-			return null;
-		Long amount = value;
-		int sec = amount.intValue() % 60;
-		int mins = amount.intValue() / 60;
-		return mins + "' " + sec + "\"";
-	}
+    /**
+     *
+     */
+    private void initStyles() {
+        titleStyle = new StyleBuilder(false).setFont(Font.ARIAL_BIG_BOLD).setHorizontalAlign(HorizontalAlign.LEFT)
+                .setVerticalAlign(VerticalAlign.MIDDLE).setTransparency(Transparency.OPAQUE)
+                .setBorderBottom(Border.PEN_1_POINT()).build();
 
+        totalColHeaderStyle = new StyleBuilder(false).setHorizontalAlign(HorizontalAlign.CENTER)
+                .setVerticalAlign(VerticalAlign.MIDDLE).setFont(Font.ARIAL_MEDIUM_BOLD).setTextColor(Color.WHITE)
+                .setBackgroundColor(Color.BLUE).build();
 
-	/**
-	 *
-	 */
-	private void initStyles() {
-		titleStyle =  new StyleBuilder(false)
-			.setFont(Font.ARIAL_BIG_BOLD)
-			.setHorizontalAlign(HorizontalAlign.LEFT)
-			.setVerticalAlign(VerticalAlign.MIDDLE)
-			.setTransparency(Transparency.OPAQUE)
-			.setBorderBottom(Border.PEN_1_POINT())
-			.build();
+        totalRowHeaderStyle = new StyleBuilder(false).setHorizontalAlign(HorizontalAlign.CENTER)
+                .setVerticalAlign(VerticalAlign.MIDDLE).setFont(Font.ARIAL_MEDIUM_BOLD).setTextColor(Color.WHITE)
+                .setBackgroundColor(Color.GREEN).build();
 
-		totalColHeaderStyle = new StyleBuilder(false)
-			.setHorizontalAlign(HorizontalAlign.CENTER)
-			.setVerticalAlign(VerticalAlign.MIDDLE)
-			.setFont(Font.ARIAL_MEDIUM_BOLD)
-			.setTextColor(Color.WHITE)
-			.setBackgroundColor(Color.BLUE)
-			.build();
+        rowHeaderStyle = new StyleBuilder(false).setHorizontalAlign(HorizontalAlign.LEFT)
+                .setVerticalAlign(VerticalAlign.TOP).setFont(Font.ARIAL_MEDIUM_BOLD).build();
+        mainHeaderStyle = new StyleBuilder(false).setHorizontalAlign(HorizontalAlign.CENTER)
+                .setVerticalAlign(VerticalAlign.MIDDLE).setFont(Font.ARIAL_BIG_BOLD).setTextColor(Color.WHITE)
+                .setTransparency(Transparency.OPAQUE).setBackgroundColor(Color.BLACK).build();
 
-		totalRowHeaderStyle = new StyleBuilder(false)
-			.setHorizontalAlign(HorizontalAlign.CENTER)
-			.setVerticalAlign(VerticalAlign.MIDDLE)
-			.setFont(Font.ARIAL_MEDIUM_BOLD)
-			.setTextColor(Color.WHITE)
-			.setBackgroundColor(Color.GREEN)
-			.build();
+        totalColStyle = new StyleBuilder(false).setPattern("#,###.##").setHorizontalAlign(HorizontalAlign.RIGHT)
+                .setFont(Font.ARIAL_MEDIUM_BOLD).setTextColor(Color.GREEN).build();
 
-		rowHeaderStyle = new StyleBuilder(false)
-			.setHorizontalAlign(HorizontalAlign.LEFT)
-			.setVerticalAlign(VerticalAlign.TOP)
-			.setFont(Font.ARIAL_MEDIUM_BOLD)
-			.build();
-		mainHeaderStyle = new StyleBuilder(false)
-			.setHorizontalAlign(HorizontalAlign.CENTER)
-			.setVerticalAlign(VerticalAlign.MIDDLE)
-			.setFont(Font.ARIAL_BIG_BOLD)
-			.setTextColor(Color.WHITE)
-			.setTransparency(Transparency.OPAQUE)
-			.setBackgroundColor(Color.BLACK)
-			.build();
+        totalRowStyle = new StyleBuilder(false).setPattern("#,###.##").setHorizontalAlign(HorizontalAlign.RIGHT)
+                .setFont(Font.ARIAL_MEDIUM_BOLD).setTextColor(Color.MAGENTA).build();
 
-		totalColStyle = new StyleBuilder(false).setPattern("#,###.##")
-			.setHorizontalAlign(HorizontalAlign.RIGHT)
-			.setFont(Font.ARIAL_MEDIUM_BOLD)
-			.setTextColor(Color.GREEN)
-			.build();
+        new StyleBuilder(false).setPattern("#,###.##").setHorizontalAlign(HorizontalAlign.RIGHT)
+                .setFont(Font.ARIAL_MEDIUM).build();
 
-		totalRowStyle = new StyleBuilder(false).setPattern("#,###.##")
-			.setHorizontalAlign(HorizontalAlign.RIGHT)
-			.setFont(Font.ARIAL_MEDIUM_BOLD)
-			.setTextColor(Color.MAGENTA)
-			.build();
-
-        Style measureStyle = new StyleBuilder(false).setPattern("#,###.##")
-                .setHorizontalAlign(HorizontalAlign.RIGHT)
-                .setFont(Font.ARIAL_MEDIUM)
-                .build();
-
-		measureStyle2 = new StyleBuilder(false).setPattern("#,###.##")
-		.setHorizontalAlign(HorizontalAlign.RIGHT)
-		.setFont(new Font(Font.MEDIUM,Font._FONT_ARIAL,false,true,false))
-		.setTextColor(Color.BLUE)
-		.build();
-	}
-
-
-	public static void main(String[] args) throws Exception {
-		CrosstabReportWithInvisibleMeasure test = new CrosstabReportWithInvisibleMeasure();
-		test.testReport();
-		JasperViewer.viewReport(test.jp);	//finally display the report report
-		JasperDesignViewer.viewReportDesign(test.jr);
-	}
+        measureStyle2 = new StyleBuilder(false).setPattern("#,###.##").setHorizontalAlign(HorizontalAlign.RIGHT)
+                .setFont(new Font(Font.MEDIUM, Font._FONT_ARIAL, false, true, false)).setTextColor(Color.BLUE).build();
+    }
 
 }

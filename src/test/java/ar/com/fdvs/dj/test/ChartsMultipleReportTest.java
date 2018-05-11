@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -32,6 +32,7 @@ package ar.com.fdvs.dj.test;
 import java.awt.Color;
 
 import net.sf.jasperreports.view.JasperViewer;
+
 import ar.com.fdvs.dj.domain.DJCalculation;
 import ar.com.fdvs.dj.domain.DJChart;
 import ar.com.fdvs.dj.domain.DJChartOptions;
@@ -53,149 +54,116 @@ import ar.com.fdvs.dj.domain.entities.columns.PropertyColumn;
 
 public class ChartsMultipleReportTest extends BaseDjReportTest {
 
-	public DynamicReport buildReport() throws Exception {
+    public static void main(String[] args) throws Exception {
+        ChartsMultipleReportTest test = new ChartsMultipleReportTest();
+        test.testReport();
+        JasperViewer.viewReport(test.jp);
 
-		Style detailStyle = new Style();
-		Style headerStyle = new Style();
-		headerStyle.setFont(Font.ARIAL_MEDIUM_BOLD);
-		headerStyle.setBorder(Border.PEN_2_POINT());
-		headerStyle.setHorizontalAlign(HorizontalAlign.CENTER);
-		headerStyle.setVerticalAlign(VerticalAlign.MIDDLE);
+        // JasperDesignViewer.viewReportDesign(DynamicJasperHelper.generateJasperReport(dr,
+        // new ClassicLayoutManager()));
+    }
 
-		Style titleStyle = new Style();
-		titleStyle.setFont(new Font(18, Font._FONT_VERDANA, true));
-		Style importeStyle = new Style();
-		importeStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
-		Style oddRowStyle = new Style();
-		oddRowStyle.setBorder(Border.NO_BORDER());
-		oddRowStyle.setBackgroundColor(Color.LIGHT_GRAY);
-		oddRowStyle.setTransparency(Transparency.OPAQUE);
+    @Override
+    public DynamicReport buildReport() throws Exception {
 
-		DynamicReportBuilder drb = new DynamicReportBuilder();
-		int margin = 20;
-		drb
-				.setTitleStyle(titleStyle)
-				.setTitle("November " + getYear() +" sales report")					//defines the title of the report
-				.setSubtitle("The items in this report correspond "
-					+"to the main products: DVDs, Books, Foods and Magazines")
-				.setDetailHeight(15).setLeftMargin(margin)
-				.setMargins(margin, margin, margin, margin)
-				.setPrintBackgroundOnOddRows(true)
-				.setPrintColumnNames(false)
-				.setOddRowBackgroundStyle(oddRowStyle);
+        Style detailStyle = new Style();
+        Style headerStyle = new Style();
+        headerStyle.setFont(Font.ARIAL_MEDIUM_BOLD);
+        headerStyle.setBorder(Border.PEN_2_POINT());
+        headerStyle.setHorizontalAlign(HorizontalAlign.CENTER);
+        headerStyle.setVerticalAlign(VerticalAlign.MIDDLE);
 
-		AbstractColumn columnState = ColumnBuilder.getNew()
-				.setColumnProperty("state", String.class.getName()).setTitle(
-						"State").setWidth(new Integer(85))
-				.setStyle(detailStyle).setHeaderStyle(headerStyle).build();
+        Style titleStyle = new Style();
+        titleStyle.setFont(new Font(18, Font._FONT_VERDANA, true));
+        Style importeStyle = new Style();
+        importeStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
+        Style oddRowStyle = new Style();
+        oddRowStyle.setBorder(Border.NO_BORDER());
+        oddRowStyle.setBackgroundColor(Color.LIGHT_GRAY);
+        oddRowStyle.setTransparency(Transparency.OPAQUE);
 
-		AbstractColumn columnBranch = ColumnBuilder.getNew()
-				.setColumnProperty("branch", String.class.getName()).setTitle(
-						"Branch").setWidth(new Integer(85)).setStyle(
-						detailStyle).setHeaderStyle(headerStyle).build();
+        DynamicReportBuilder drb = new DynamicReportBuilder();
+        int margin = 20;
+        drb.setTitleStyle(titleStyle).setTitle("November " + getYear() + " sales report") // defines the title of the
+                                                                                          // report
+                .setSubtitle("The items in this report correspond "
+                        + "to the main products: DVDs, Books, Foods and Magazines")
+                .setDetailHeight(15).setLeftMargin(margin).setMargins(margin, margin, margin, margin)
+                .setPrintBackgroundOnOddRows(true).setPrintColumnNames(false).setOddRowBackgroundStyle(oddRowStyle);
 
-		AbstractColumn columnaProductLine = ColumnBuilder.getNew()
-				.setColumnProperty("productLine", String.class.getName())
-				.setTitle("Product Line").setWidth(new Integer(85)).setStyle(
-						detailStyle).setHeaderStyle(headerStyle).build();
+        AbstractColumn columnState = ColumnBuilder.getNew().setColumnProperty("state", String.class.getName())
+                .setTitle("State").setWidth(new Integer(85)).setStyle(detailStyle).setHeaderStyle(headerStyle).build();
 
-		AbstractColumn columnaItem = ColumnBuilder.getNew()
-				.setColumnProperty("item", String.class.getName()).setTitle(
-						"Item").setWidth(new Integer(85)).setStyle(detailStyle)
-				.setHeaderStyle(headerStyle).build();
+        AbstractColumn columnBranch = ColumnBuilder.getNew().setColumnProperty("branch", String.class.getName())
+                .setTitle("Branch").setWidth(new Integer(85)).setStyle(detailStyle).setHeaderStyle(headerStyle).build();
 
-		AbstractColumn columnCode = ColumnBuilder.getNew()
-				.setColumnProperty("id", Long.class.getName()).setTitle("ID")
-				.setWidth(new Integer(40)).setStyle(importeStyle)
-				.setHeaderStyle(headerStyle).build();
+        AbstractColumn columnaProductLine = ColumnBuilder.getNew()
+                .setColumnProperty("productLine", String.class.getName()).setTitle("Product Line")
+                .setWidth(new Integer(85)).setStyle(detailStyle).setHeaderStyle(headerStyle).build();
 
-		AbstractColumn columnaQuantity = ColumnBuilder.getNew()
-				.setColumnProperty("quantity", Long.class.getName()).setTitle(
-						"Quantity").setWidth(new Integer(80)).setStyle(
-						importeStyle).setHeaderStyle(headerStyle).build();
+        AbstractColumn columnaItem = ColumnBuilder.getNew().setColumnProperty("item", String.class.getName())
+                .setTitle("Item").setWidth(new Integer(85)).setStyle(detailStyle).setHeaderStyle(headerStyle).build();
 
-		AbstractColumn columnAmount = ColumnBuilder.getNew()
-				.setColumnProperty("amount", Float.class.getName()).setTitle(
-						"Amount").setWidth(new Integer(90))
-				.setPattern("$ 0.00").setStyle(importeStyle).setHeaderStyle(
-						headerStyle).build();
+        AbstractColumn columnCode = ColumnBuilder.getNew().setColumnProperty("id", Long.class.getName()).setTitle("ID")
+                .setWidth(new Integer(40)).setStyle(importeStyle).setHeaderStyle(headerStyle).build();
 
-		GroupBuilder gb1 = new GroupBuilder();
+        AbstractColumn columnaQuantity = ColumnBuilder.getNew().setColumnProperty("quantity", Long.class.getName())
+                .setTitle("Quantity").setWidth(new Integer(80)).setStyle(importeStyle).setHeaderStyle(headerStyle)
+                .build();
 
-//		 define the criteria column to group by (columnState)
-		DJGroup g1 = gb1.setCriteriaColumn((PropertyColumn) columnState)
-				.setGroupLayout(GroupLayout.DEFAULT_WITH_HEADER)
-				.build();
-		
-		GroupBuilder gb2 = new GroupBuilder(); // Create another group (using another column as criteria)
-		DJGroup g2 = gb2.setCriteriaColumn((PropertyColumn) columnBranch) // and we add the same operations for the columnAmount and
-				.addFooterVariable(columnAmount,DJCalculation.SUM) // columnaQuantity columns
-				.addFooterVariable(columnaQuantity,	DJCalculation.SUM)
-				.setGroupLayout(GroupLayout.DEFAULT)
-				.build();
+        AbstractColumn columnAmount = ColumnBuilder.getNew().setColumnProperty("amount", Float.class.getName())
+                .setTitle("Amount").setWidth(new Integer(90)).setPattern("$ 0.00").setStyle(importeStyle)
+                .setHeaderStyle(headerStyle).build();
 
-		drb.addColumn(columnState);
-		drb.addColumn(columnBranch);
-		drb.addColumn(columnaProductLine);
-		drb.addColumn(columnaItem);
-		drb.addColumn(columnCode);
-		drb.addColumn(columnaQuantity);
-		drb.addColumn(columnAmount);
+        GroupBuilder gb1 = new GroupBuilder();
 
-		drb.addGroup(g1); // add group g1
-		drb.addGroup(g2); // add group g2
+        // define the criteria column to group by (columnState)
+        DJGroup g1 = gb1.setCriteriaColumn((PropertyColumn) columnState).setGroupLayout(GroupLayout.DEFAULT_WITH_HEADER)
+                .build();
 
-		drb.setUseFullPageWidth(true);
+        GroupBuilder gb2 = new GroupBuilder(); // Create another group (using another column as criteria)
+        DJGroup g2 = gb2.setCriteriaColumn((PropertyColumn) columnBranch) // and we add the same operations for the
+                                                                          // columnAmount and
+                .addFooterVariable(columnAmount, DJCalculation.SUM) // columnaQuantity columns
+                .addFooterVariable(columnaQuantity, DJCalculation.SUM).setGroupLayout(GroupLayout.DEFAULT).build();
 
-		DJChartBuilder cb = new DJChartBuilder();
-		DJChart chart =  cb.setType(DJChart.BAR_CHART)
-						.setOperation(DJChart.CALCULATION_SUM)
-						.setColumnsGroup(g1)
-						.addColumn(columnAmount)
-						.setPosition(DJChartOptions.POSITION_HEADER)
-						.setShowLabels(true)
-						.setHeight(200)
-						.build();
+        drb.addColumn(columnState);
+        drb.addColumn(columnBranch);
+        drb.addColumn(columnaProductLine);
+        drb.addColumn(columnaItem);
+        drb.addColumn(columnCode);
+        drb.addColumn(columnaQuantity);
+        drb.addColumn(columnAmount);
 
-		//drb.addChart(chart); //add chart
-		
-		DJChartBuilder cb2 = new DJChartBuilder();
-		DJChart chart2 =  cb2.addType(DJChart.PIE_CHART)
-						.setOperation(DJChart.CALCULATION_SUM)
-						.setColumnsGroup(g1)
-						.addColumn(columnAmount)
-						.setPosition(DJChartOptions.POSITION_HEADER)
-						.setShowLabels(true)
-						.setHeight(200)
-						.build();
+        drb.addGroup(g1); // add group g1
+        drb.addGroup(g2); // add group g2
 
-		drb.addChart(chart2); //add chart
-		
-		DJChartBuilder cb3 = new DJChartBuilder();
-		DJChart chart3 =  cb3.setType(DJChart.PIE_CHART)
-		.setOperation(DJChart.CALCULATION_SUM)
-		.setColumnsGroup(g1)
-		.addColumn(columnAmount)
-		.setPosition(DJChartOptions.POSITION_HEADER)
-		.setShowLabels(true)
-		.setHeight(200)
-		.build();
-		
-		//drb.addChart(chart3); //add chart
+        drb.setUseFullPageWidth(true);
 
-		DynamicReport dr = drb.build();
+        DJChartBuilder cb = new DJChartBuilder();
+        cb.setType(DJChart.BAR_CHART).setOperation(DJChart.CALCULATION_SUM).setColumnsGroup(g1).addColumn(columnAmount)
+                .setPosition(DJChartOptions.POSITION_HEADER).setShowLabels(true).setHeight(200).build();
 
-		dr.getProperties().put("net.sf.jasperreports.chart.pie.ignore.duplicated.key","true"); //Needed in old API
+        // drb.addChart(chart); //add chart
 
-		return dr;
-	}
+        DJChartBuilder cb2 = new DJChartBuilder();
+        DJChart chart2 = cb2.addType(DJChart.PIE_CHART).setOperation(DJChart.CALCULATION_SUM).setColumnsGroup(g1)
+                .addColumn(columnAmount).setPosition(DJChartOptions.POSITION_HEADER).setShowLabels(true).setHeight(200)
+                .build();
 
-	public static void main(String[] args) throws Exception {
-		ChartsMultipleReportTest test = new ChartsMultipleReportTest();
-		test.testReport();
-		JasperViewer.viewReport(test.jp);
+        drb.addChart(chart2); // add chart
 
-//		JasperDesignViewer.viewReportDesign(DynamicJasperHelper.generateJasperReport(dr, new ClassicLayoutManager()));
-	}
+        DJChartBuilder cb3 = new DJChartBuilder();
+        cb3.setType(DJChart.PIE_CHART).setOperation(DJChart.CALCULATION_SUM).setColumnsGroup(g1).addColumn(columnAmount)
+                .setPosition(DJChartOptions.POSITION_HEADER).setShowLabels(true).setHeight(200).build();
+
+        // drb.addChart(chart3); //add chart
+
+        DynamicReport dr = drb.build();
+
+        dr.getProperties().put("net.sf.jasperreports.chart.pie.ignore.duplicated.key", "true"); // Needed in old API
+
+        return dr;
+    }
 
 }

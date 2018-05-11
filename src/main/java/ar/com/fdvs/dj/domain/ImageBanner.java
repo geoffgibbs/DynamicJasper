@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -34,101 +34,110 @@ import ar.com.fdvs.dj.domain.entities.Entity;
 
 public class ImageBanner extends DJBaseElement {
 
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
+    public enum Alignment {
+        Left((byte) 0), Right((byte) 1), Center((byte) 2);
 
-	@Deprecated
-	public static final byte ALIGN_LEFT = 0;
+        public static Alignment fromValue(byte value) {
+            for (Alignment alignment : Alignment.values()) {
+                if (alignment.getValue() == value) {
+                    return alignment;
+                }
+            }
 
-	@Deprecated
-	public static final byte ALIGN_RIGHT = 1;
+            return null;
+        }
 
-	@Deprecated
-	public static final byte ALIGN_CENTER = 2;
+        private byte value;
 
-	private String imagePath;
-	private int width = 0;
-	private int height= 0;
-	private Alignment align = Alignment.Left;
+        Alignment(byte value) {
+            this.value = value;
+        }
 
-	private ImageScaleMode scaleMode = ImageScaleMode.FILL_PROPORTIONALLY;
-	
-	public ImageBanner(){}
+        public byte getValue() {
+            return value;
+        }
+    }
+
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
+
+    @Deprecated
+    public static final byte ALIGN_LEFT = 0;
+
+    @Deprecated
+    public static final byte ALIGN_RIGHT = 1;
+
+    @Deprecated
+    public static final byte ALIGN_CENTER = 2;
+    private String imagePath;
+    private int width = 0;
+    private int height = 0;
+
+    private Alignment align = Alignment.Left;
+
+    private ImageScaleMode scaleMode = ImageScaleMode.FILL_PROPORTIONALLY;
+
+    public ImageBanner() {
+    }
+
+    public ImageBanner(String imagePath, int width, int height, Alignment align) {
+        this.imagePath = imagePath;
+        this.width = width;
+        this.height = height;
+        this.align = align != null ? align : Alignment.Left;
+    }
+
+    @Deprecated
+    public ImageBanner(String imagePath, int width, int height, byte align) {
+        this.imagePath = imagePath;
+        this.width = width;
+        this.height = height;
+        Alignment alignment = Alignment.fromValue(align);
+        this.align = alignment != null ? alignment : Alignment.Left;
+    }
+
+    public Alignment getAlign() {
+        return align;
+    }
 
     public int getHeight() {
-		return height;
-	}
-	public void setHeight(int height) {
-		this.height = height;
-	}
-	public String getImagePath() {
-		return imagePath;
-	}
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
-	public Alignment getAlign() {
-		return align;
-	}
+        return height;
+    }
 
-	@Deprecated
-	public void setAlign(byte orientation) {
-		this.align = Alignment.fromValue(orientation);
-	}
-	public void setAlign(Alignment orientation) {
-		this.align = orientation;
-	}
-	public int getWidth() {
-		return width;
-	}
-	public void setWidth(int width) {
-		this.width = width;
-	}
-	
-	public ImageScaleMode getScaleMode() {
-		return scaleMode;
-	}
+    public String getImagePath() {
+        return imagePath;
+    }
 
-	public void setScaleMode(ImageScaleMode scaleMode) {
-		this.scaleMode = scaleMode;
-	}
+    public ImageScaleMode getScaleMode() {
+        return scaleMode;
+    }
 
-	@Deprecated
-	public ImageBanner(String imagePath, int width, int height, byte align) {
-		this.imagePath = imagePath;
-		this.width = width;
-		this.height = height;
-		Alignment alignment = Alignment.fromValue(align);
-		this.align = (alignment!=null?alignment:Alignment.Left);
-	}
+    public int getWidth() {
+        return width;
+    }
 
-	public ImageBanner(String imagePath, int width, int height, Alignment align) {
-		this.imagePath = imagePath;
-		this.width = width;
-		this.height = height;
-		this.align = align!=null?align:Alignment.Left;
-	}
+    public void setAlign(Alignment orientation) {
+        align = orientation;
+    }
 
-	public enum Alignment {
-		Left((byte)0), Right((byte)1), Center((byte)2);
+    @Deprecated
+    public void setAlign(byte orientation) {
+        align = Alignment.fromValue(orientation);
+    }
 
-		Alignment(byte value){
-			this.value = value;
-		}
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
-		private byte value;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 
-		public byte getValue() {
-			return value;
-		}
+    public void setScaleMode(ImageScaleMode scaleMode) {
+        this.scaleMode = scaleMode;
+    }
 
-		public static Alignment fromValue(byte value) {
-			for (Alignment alignment : Alignment.values()) {
-				if (alignment.getValue() == value)
-					return alignment;
-			}
-
-			return null;
-		}
-	}
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
 }

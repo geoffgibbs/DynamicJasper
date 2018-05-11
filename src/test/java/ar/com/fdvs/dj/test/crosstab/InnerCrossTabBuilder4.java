@@ -5,124 +5,61 @@
 
 package ar.com.fdvs.dj.test.crosstab;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import junit.framework.TestCase;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+
 import ar.com.fdvs.dj.core.DJConstants;
 import ar.com.fdvs.dj.core.DynamicJasperHelper;
 import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
 import ar.com.fdvs.dj.core.layout.LayoutManager;
-import ar.com.fdvs.dj.domain.*;
-import ar.com.fdvs.dj.domain.builders.*;
-import ar.com.fdvs.dj.domain.constants.*;
+import ar.com.fdvs.dj.domain.CustomExpression;
+import ar.com.fdvs.dj.domain.DJCalculation;
+import ar.com.fdvs.dj.domain.DJCrosstab;
+import ar.com.fdvs.dj.domain.DJLabel;
+import ar.com.fdvs.dj.domain.DynamicReport;
+import ar.com.fdvs.dj.domain.builders.BuilderException;
+import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
+import ar.com.fdvs.dj.domain.builders.CrosstabBuilder;
+import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
+import ar.com.fdvs.dj.domain.constants.Border;
+import ar.com.fdvs.dj.domain.constants.Page;
 import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
 import ar.com.fdvs.dj.test.ReportExporter;
-import junit.framework.TestCase;
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.view.JasperViewer;
-
-import java.io.FileNotFoundException;
-import java.util.*;
 
 /**
  * @author rve
  */
 public class InnerCrossTabBuilder4 extends TestCase {
 
-    public DynamicReport buildDynamicReport() {
-        FastReportBuilder drb = null;
-        drb = new FastReportBuilder();
-        drb.setGrandTotalLegend("Total");
-        drb.setPageSizeAndOrientation(new Page(585, 842));
-        drb.setUseFullPageWidth(false);
-        drb.setAllowDetailSplit(false);
-        drb.setWhenNoData("No data", null, true, true);
-        drb.setReportName("This is the main report");
-
-        AbstractColumn colSales = ColumnBuilder.getNew()
-                .setColumnProperty("sales", Integer.class.getName())
-                .setTitle("Sales")
-                .setWidth(50)
-                .build();
-
-
-        AbstractColumn colYear = ColumnBuilder.getNew()
-//                                           	.setColumnProperty("year", String.class.getName())
-                .setTitle("Year")
-                .setWidth(50)
-                .setCustomExpression(new CustomExpression() {
-
-                    public String getClassName() {
-                        return String.class.getName();
-                    }
-
-                    public Object evaluate(Map fields, Map variables, Map parameters) {
-                        return fields.get("year") + " - " + fields.get("sales");
-                    }
-                })
-                .build(); //WRONG Class was used, it is Integer
-
-        AbstractColumn colexp = new ColumnBuilder().setTitle("exp").setCustomExpression(new CustomExpression() {
-
-            public String getClassName() {
-                return String.class.getName();
-            }
-
-            public Object evaluate(Map fields, Map variables, Map parameters) {
-                return fields.get("year") + " - " + fields.get("sales");
-            }
-        }).setWidth(100).build();
-        drb.addColumn(colYear);
-        drb.addColumn(colSales);
-        drb.addColumn(colexp);
-
-        drb.addGroups(1);
-
-        drb.addField("year", String.class.getName()); //IMPORTANT!!! this must be declared
-        drb.addField("detail", Collection.class.getName()); //IMPORTANT!!! this must be declared
-//            drb.addConcatenatedReport(buildInnerDynamicReport(), new ClassicLayoutManager(), "ds_cross", DJConstants.DATA_SOURCE_ORIGIN_PARAMETER, DJConstants.DATA_SOURCE_TYPE_COLLECTION);
-
-        return drb.build();
-
-    }
-
-    private DynamicReport buildInnerDynamicReport() throws ClassNotFoundException, BuilderException {
-        FastReportBuilder drb = new FastReportBuilder();
-
-        Style titlestyle = new StyleBuilder(false).setHorizontalAlign(HorizontalAlign.LEFT).setFont(Font.ARIAL_MEDIUM_BOLD).build();
-
-        drb.addColumn("", "year", String.class.getName(), 200)
-                .addField("detail", Collection.class.getName())
-                .setTitleStyle(titlestyle)
-                .setUseFullPageWidth(true)
-                .setPrintColumnNames(false)
-                .setAllowDetailSplit(false)
-                .setWhenNoDataAllSectionNoDetail()
-                .setReportName("Inner crosstab")
-                .setTitle(" sales detail by year")
-                .setPrintColumnNames(false);
-
-
-        drb.addGroups(1, GroupLayout.EMPTY);
-        drb.getGroup(0).addHeaderCrosstab(buildCrosstab());
-
-        return drb.build();
-    }
-
     private static DJCrosstab buildCrosstab() {
-        CrosstabBuilder cb = new CrosstabBuilder().setUseFullWidth(true)
-                .setAutomaticTitle(false).setMainHeaderTitle("")
+        CrosstabBuilder cb = new CrosstabBuilder().setUseFullWidth(true).setAutomaticTitle(false).setMainHeaderTitle("")
                 .setHeight(50)
-//                             .setCaption(new DJLabel("\" sales for year \" + $F{field2}",null,true) )
+                // .setCaption(new DJLabel("\" sales for year \" + $F{field2}",null,true) )
                 .setCaption(new DJLabel(new CustomExpression() {
 
-                    public String getClassName() {
-                        return String.class.getName();
-                    }
-
+                    @Override
                     public Object evaluate(Map fields, Map variables, Map parameters) {
                         return "Title from custom expresion for year " + fields.get("year");
                     }
-                }, null))
-                .setCellBorder(Border.PEN_1_POINT())
+
+                    @Override
+                    public String getClassName() {
+                        return String.class.getName();
+                    }
+                }, null)).setCellBorder(Border.PEN_1_POINT())
                 .setDatasource("detail", DJConstants.DATA_SOURCE_ORIGIN_FIELD, DJConstants.DATA_SOURCE_TYPE_COLLECTION);
 
         cb.addColumn("Type", "field2", String.class.getName(), false);
@@ -132,6 +69,9 @@ public class InnerCrossTabBuilder4 extends TestCase {
         return cb.build();
     }
 
+    public static LayoutManager getLayoutManager() {
+        return new ClassicLayoutManager();
+    }
 
     public static List getList() {
         List list = new ArrayList();
@@ -241,12 +181,70 @@ public class InnerCrossTabBuilder4 extends TestCase {
         return list;
     }
 
-    public static LayoutManager getLayoutManager() {
-        return new ClassicLayoutManager();
+    public static void main(String[] args) throws Exception {
+        InnerCrossTabBuilder4 test = new InnerCrossTabBuilder4();
+        test.testReport();
+        JasperViewer.viewReport(test.jp);
     }
 
     JasperReport jr;
     JasperPrint jp;
+
+    public DynamicReport buildDynamicReport() {
+        FastReportBuilder drb = null;
+        drb = new FastReportBuilder();
+        drb.setGrandTotalLegend("Total");
+        drb.setPageSizeAndOrientation(new Page(585, 842));
+        drb.setUseFullPageWidth(false);
+        drb.setAllowDetailSplit(false);
+        drb.setWhenNoData("No data", null, true, true);
+        drb.setReportName("This is the main report");
+
+        AbstractColumn colSales = ColumnBuilder.getNew().setColumnProperty("sales", Integer.class.getName())
+                .setTitle("Sales").setWidth(50).build();
+
+        AbstractColumn colYear = ColumnBuilder.getNew()
+                // .setColumnProperty("year", String.class.getName())
+                .setTitle("Year").setWidth(50).setCustomExpression(new CustomExpression() {
+
+                    @Override
+                    public Object evaluate(Map fields, Map variables, Map parameters) {
+                        return fields.get("year") + " - " + fields.get("sales");
+                    }
+
+                    @Override
+                    public String getClassName() {
+                        return String.class.getName();
+                    }
+                }).build(); // WRONG Class was used, it is Integer
+
+        AbstractColumn colexp = new ColumnBuilder().setTitle("exp").setCustomExpression(new CustomExpression() {
+
+            @Override
+            public Object evaluate(Map fields, Map variables, Map parameters) {
+                return fields.get("year") + " - " + fields.get("sales");
+            }
+
+            @Override
+            public String getClassName() {
+                return String.class.getName();
+            }
+        }).setWidth(100).build();
+        drb.addColumn(colYear);
+        drb.addColumn(colSales);
+        drb.addColumn(colexp);
+
+        drb.addGroups(1);
+
+        drb.addField("year", String.class.getName()); // IMPORTANT!!! this must be declared
+        drb.addField("detail", Collection.class.getName()); // IMPORTANT!!! this must be declared
+        // drb.addConcatenatedReport(buildInnerDynamicReport(), new
+        // ClassicLayoutManager(), "ds_cross", DJConstants.DATA_SOURCE_ORIGIN_PARAMETER,
+        // DJConstants.DATA_SOURCE_TYPE_COLLECTION);
+
+        return drb.build();
+
+    }
 
     public void testReport() throws JRException, FileNotFoundException, ClassNotFoundException, BuilderException {
         List list = getList();
@@ -255,17 +253,14 @@ public class InnerCrossTabBuilder4 extends TestCase {
         params.put("ds_cross", list);
 
         jr = DynamicJasperHelper.generateJasperReport(buildDynamicReport(), getLayoutManager(), params);
-//          jr = DynamicJasperHelper.generateJasperReport(buildInnerDynamicReport(), getLayoutManager(), params);
+        // jr = DynamicJasperHelper.generateJasperReport(buildInnerDynamicReport(),
+        // getLayoutManager(), params);
         jp = JasperFillManager.fillReport(jr, params, ds);
 
-        ReportExporter.exportReport(jp, System.getProperty("user.dir") + "/target/" + this.getClass().getName() + ".pdf");
-        DynamicJasperHelper.generateJRXML(jr, "UTF-8", System.getProperty("user.dir") + "/target/" + this.getClass().getName() + ".jrxml");
+        ReportExporter.exportReport(jp,
+                System.getProperty("user.dir") + "/target/" + this.getClass().getName() + ".pdf");
+        DynamicJasperHelper.generateJRXML(jr, "UTF-8",
+                System.getProperty("user.dir") + "/target/" + this.getClass().getName() + ".jrxml");
 
-    }
-
-    public static void main(String[] args) throws Exception {
-        InnerCrossTabBuilder4 test = new InnerCrossTabBuilder4();
-        test.testReport();
-        JasperViewer.viewReport(test.jp);
     }
 }

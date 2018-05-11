@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,23 +15,22 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.domain.builders;
 
-import ar.com.fdvs.dj.core.DJException;
-import ar.com.fdvs.dj.domain.DJChart;
-import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
+import java.util.List;
+
 import net.sf.jasperreports.charts.design.JRDesignCategoryDataset;
 import net.sf.jasperreports.charts.design.JRDesignCategorySeries;
 import net.sf.jasperreports.charts.design.JRDesignPieDataset;
@@ -42,156 +41,165 @@ import net.sf.jasperreports.engine.design.JRDesignGroup;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.type.ResetTypeEnum;
 
-import java.util.List;
+import ar.com.fdvs.dj.core.DJException;
+import ar.com.fdvs.dj.domain.DJChart;
+import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
 
 public class DataSetFactory {
 
-	public static JRDesignChartDataset getDataset(DJChart djchart, JRDesignGroup group, JRDesignGroup parentGroup, List<JRDesignVariable> vars){
+    protected static JRDesignChartDataset createBarDataset(JRDesignGroup group, JRDesignGroup parentGroup,
+            List<JRDesignVariable> vars, DJChart djchart) {
+        JRDesignCategoryDataset data = new JRDesignCategoryDataset(null);
 
-		JRDesignChartDataset dataSet = null;
-		
-		byte chartType = djchart.getType();
-		
-		if (chartType == DJChart.PIE_CHART){
-			dataSet = createPieDataset(group,parentGroup, vars, djchart);
-		}
-		else if (chartType == DJChart.BAR_CHART) {
-			dataSet = createBarDataset(group,parentGroup, vars, djchart);
-		}
+        for (JRDesignVariable var1 : vars) {
+            JRDesignCategorySeries serie = new JRDesignCategorySeries();
 
-		if (dataSet == null){
-			throw new DJException("Error creating dataset for chart, no valid dataset type.");
-		}
+            // And use it as value for each bar
+            JRDesignExpression varExp = getExpressionFromVariable(var1);
+            serie.setValueExpression(varExp);
 
-		return dataSet;
-	}
+            // The key for each bar
+            JRExpression exp2 = group.getExpression();
 
-	/**
-	 * Use vars[0] as value, user vars[1] as series
-	 * @param group
-	 * @param parentGroup
-	 * @param vars
-	 * @param djchart
-	 * @return
-	 */
-	protected static JRDesignChartDataset createLineDataset(JRDesignGroup group, JRDesignGroup parentGroup, List vars, DJChart djchart) {
-		JRDesignCategoryDataset data = new JRDesignCategoryDataset(null);
+            JRDesignExpression exp3 = new JRDesignExpression();
+            int index = vars.indexOf(var1);
+            AbstractColumn col = djchart.getColumns().get(index);
+            exp3.setText("\"" + col.getTitle() + "\"");
+            exp3.setValueClass(String.class);
 
-//		for (Iterator iterator = vars.iterator(); iterator.hasNext();) {
-			JRDesignCategorySeries serie = new JRDesignCategorySeries();
-//			JRDesignVariable var = (JRDesignVariable) iterator.next();
-			JRDesignVariable var = (JRDesignVariable) vars.get(0);
-			JRDesignVariable var1 = (JRDesignVariable) vars.get(0);
-			if (vars.size() > 1)
-				var1 = (JRDesignVariable) vars.get(1);
-			
-			//And use it as value for each bar
-			JRDesignExpression varExp = getExpressionFromVariable(var);
-			JRExpression varExp1 = var1.getExpression();
-			serie.setValueExpression(varExp);
-	
-			//The key for each bar
-			JRExpression exp2 = group.getExpression();
-	
-			JRDesignExpression exp3 = new JRDesignExpression();
-			int index = vars.indexOf(var);
-			AbstractColumn col = djchart.getColumns().get(index);
-			exp3.setText("\"" + col.getTitle() + "\"");
-			exp3.setValueClass(String.class);
-	
-			//Here you can set subgroups of bars
-			serie.setCategoryExpression(exp2);
-//			serie.setCategoryExpression(varExp1);
-	
-			serie.setLabelExpression(exp2);
-			serie.setSeriesExpression(varExp1);
-				
-			data.addCategorySeries(serie);
-//		}
+            // Here you can set subgroups of bars
+            if (!djchart.getOptions().isUseColumnsAsCategorie()) {
+                serie.setCategoryExpression(exp3);
 
-		setResetStyle(data, group, parentGroup);
-		return data;
-	}
+                serie.setLabelExpression(exp2);
+                serie.setSeriesExpression(exp2);
+            } else {
+                // FIXED: due to https://sourceforge.net/forum/message.php?msg_id=7396861
+                serie.setCategoryExpression(exp2);
 
-	protected static JRDesignChartDataset createBarDataset(JRDesignGroup group, JRDesignGroup parentGroup, List<JRDesignVariable> vars, DJChart djchart) {
-		JRDesignCategoryDataset data = new JRDesignCategoryDataset(null);
+                serie.setLabelExpression(exp3);
+                serie.setSeriesExpression(exp3);
+            }
 
-		for (JRDesignVariable var1 : vars) {
-			JRDesignCategorySeries serie = new JRDesignCategorySeries();
+            data.addCategorySeries(serie);
+        }
 
-			//And use it as value for each bar
-			JRDesignExpression varExp = getExpressionFromVariable(var1);
-			serie.setValueExpression(varExp);
+        setResetStyle(data, group, parentGroup);
 
-			//The key for each bar
-			JRExpression exp2 = group.getExpression();
+        return data;
+    }
 
-			JRDesignExpression exp3 = new JRDesignExpression();
-			int index = vars.indexOf(var1);
-			AbstractColumn col = djchart.getColumns().get(index);
-			exp3.setText("\"" + col.getTitle() + "\"");
-			exp3.setValueClass(String.class);
+    /**
+     * Use vars[0] as value, user vars[1] as series
+     * 
+     * @param group
+     * @param parentGroup
+     * @param vars
+     * @param djchart
+     * @return
+     */
+    protected static JRDesignChartDataset createLineDataset(JRDesignGroup group, JRDesignGroup parentGroup, List vars,
+            DJChart djchart) {
+        JRDesignCategoryDataset data = new JRDesignCategoryDataset(null);
 
-			//Here you can set subgroups of bars
-			if (!djchart.getOptions().isUseColumnsAsCategorie()) {
-				serie.setCategoryExpression(exp3);
+        // for (Iterator iterator = vars.iterator(); iterator.hasNext();) {
+        JRDesignCategorySeries serie = new JRDesignCategorySeries();
+        // JRDesignVariable var = (JRDesignVariable) iterator.next();
+        JRDesignVariable var = (JRDesignVariable) vars.get(0);
+        JRDesignVariable var1 = (JRDesignVariable) vars.get(0);
+        if (vars.size() > 1) {
+            var1 = (JRDesignVariable) vars.get(1);
+        }
 
-				serie.setLabelExpression(exp2);
-				serie.setSeriesExpression(exp2);
-			} else {
-				//FIXED: due to https://sourceforge.net/forum/message.php?msg_id=7396861
-				serie.setCategoryExpression(exp2);
+        // And use it as value for each bar
+        JRDesignExpression varExp = getExpressionFromVariable(var);
+        JRExpression varExp1 = var1.getExpression();
+        serie.setValueExpression(varExp);
 
-				serie.setLabelExpression(exp3);
-				serie.setSeriesExpression(exp3);
-			}
+        // The key for each bar
+        JRExpression exp2 = group.getExpression();
 
+        JRDesignExpression exp3 = new JRDesignExpression();
+        int index = vars.indexOf(var);
+        AbstractColumn col = djchart.getColumns().get(index);
+        exp3.setText("\"" + col.getTitle() + "\"");
+        exp3.setValueClass(String.class);
 
-			data.addCategorySeries(serie);
-		}
+        // Here you can set subgroups of bars
+        serie.setCategoryExpression(exp2);
+        // serie.setCategoryExpression(varExp1);
 
-		setResetStyle(data, group, parentGroup);
+        serie.setLabelExpression(exp2);
+        serie.setSeriesExpression(varExp1);
 
-		return data;
-	}
+        data.addCategorySeries(serie);
+        // }
 
-	protected static JRDesignChartDataset createPieDataset(JRDesignGroup group, JRDesignGroup parentGroup, List<JRDesignVariable> vars, DJChart djchart) {
-		JRDesignPieDataset data = new JRDesignPieDataset(null);
+        setResetStyle(data, group, parentGroup);
+        return data;
+    }
 
-		//noinspection LoopStatementThatDoesntLoop
-		for (JRDesignVariable var : vars) {
-			//And transform it in the value for each pie slice
-			JRDesignExpression expression = getExpressionFromVariable(var);
-			data.setValueExpression(expression);
+    protected static JRDesignChartDataset createPieDataset(JRDesignGroup group, JRDesignGroup parentGroup,
+            List<JRDesignVariable> vars, DJChart djchart) {
+        JRDesignPieDataset data = new JRDesignPieDataset(null);
 
-			break; //PIE data set uses only one series
-		}
-		//The key for each pie slice
-		data.setKeyExpression(group.getExpression());
+        // noinspection LoopStatementThatDoesntLoop
+        for (JRDesignVariable var : vars) {
+            // And transform it in the value for each pie slice
+            JRDesignExpression expression = getExpressionFromVariable(var);
+            data.setValueExpression(expression);
 
-		setResetStyle(data, group, parentGroup);
+            break; // PIE data set uses only one series
+        }
+        // The key for each pie slice
+        data.setKeyExpression(group.getExpression());
 
-		return data;
-	}
+        setResetStyle(data, group, parentGroup);
 
-	/**
-	 * Generates an expression from a variable
-	 * @param var The variable from which to generate the expression
-	 * @return A expression that represents the given variable
-	 */
-	private static JRDesignExpression getExpressionFromVariable(JRDesignVariable var){
-		JRDesignExpression exp = new JRDesignExpression();
-		exp.setText("$V{" + var.getName() + "}");
-		exp.setValueClass(var.getValueClass());
-		return exp;
-	}
+        return data;
+    }
 
-	private static void setResetStyle(JRDesignChartDataset dataset, JRDesignGroup group, JRDesignGroup parentGroup){
-		//When to start a new chart? When the group's parent changes
-		dataset.setResetGroup(parentGroup);
-		if (dataset.getResetGroup().equals(group))
-			dataset.setResetType( ResetTypeEnum.REPORT );
-		else
-			dataset.setResetType( ResetTypeEnum.GROUP );
-	}
+    public static JRDesignChartDataset getDataset(DJChart djchart, JRDesignGroup group, JRDesignGroup parentGroup,
+            List<JRDesignVariable> vars) {
+
+        JRDesignChartDataset dataSet = null;
+
+        byte chartType = djchart.getType();
+
+        if (chartType == DJChart.PIE_CHART) {
+            dataSet = createPieDataset(group, parentGroup, vars, djchart);
+        } else if (chartType == DJChart.BAR_CHART) {
+            dataSet = createBarDataset(group, parentGroup, vars, djchart);
+        }
+
+        if (dataSet == null) {
+            throw new DJException("Error creating dataset for chart, no valid dataset type.");
+        }
+
+        return dataSet;
+    }
+
+    /**
+     * Generates an expression from a variable
+     * 
+     * @param var
+     *            The variable from which to generate the expression
+     * @return A expression that represents the given variable
+     */
+    private static JRDesignExpression getExpressionFromVariable(JRDesignVariable var) {
+        JRDesignExpression exp = new JRDesignExpression();
+        exp.setText("$V{" + var.getName() + "}");
+        exp.setValueClass(var.getValueClass());
+        return exp;
+    }
+
+    private static void setResetStyle(JRDesignChartDataset dataset, JRDesignGroup group, JRDesignGroup parentGroup) {
+        // When to start a new chart? When the group's parent changes
+        dataset.setResetGroup(parentGroup);
+        if (dataset.getResetGroup().equals(group)) {
+            dataset.setResetType(ResetTypeEnum.REPORT);
+        } else {
+            dataset.setResetType(ResetTypeEnum.GROUP);
+        }
+    }
 }

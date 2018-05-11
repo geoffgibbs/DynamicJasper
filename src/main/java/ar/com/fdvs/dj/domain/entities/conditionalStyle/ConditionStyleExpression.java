@@ -1,25 +1,25 @@
-package ar.com.fdvs.dj.domain.entities.conditionalStyle;
 
-import ar.com.fdvs.dj.domain.CustomExpression;
-import ar.com.fdvs.dj.domain.entities.Entity;
+package ar.com.fdvs.dj.domain.entities.conditionalStyle;
 
 import java.io.Serializable;
 import java.util.Map;
 
-public abstract class ConditionStyleExpression  implements CustomExpression, Serializable {
+import ar.com.fdvs.dj.domain.CustomExpression;
+import ar.com.fdvs.dj.domain.entities.Entity;
 
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
-	
-	private Object currentValue;
+public abstract class ConditionStyleExpression implements CustomExpression, Serializable {
 
-	public Object evaluate(Map fields, Map variables, Map parameters, Object value) {
-		this.currentValue = value;
-		return evaluate(fields, variables, parameters);
-	}
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
 
-	public Object getCurrentValue() {
-		return currentValue;
-	}
+    private Object currentValue;
 
+    public Object evaluate(Map fields, Map variables, Map parameters, Object value) {
+        currentValue = value;
+        return evaluate(fields, variables, parameters);
+    }
+
+    public Object getCurrentValue() {
+        return currentValue;
+    }
 
 }

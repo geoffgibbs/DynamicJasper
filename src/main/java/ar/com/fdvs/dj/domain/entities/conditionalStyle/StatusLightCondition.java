@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,67 +15,71 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.domain.entities.conditionalStyle;
 
+import java.util.Map;
+
 import ar.com.fdvs.dj.domain.CustomExpression;
 import ar.com.fdvs.dj.domain.entities.Entity;
-
-import java.util.Map;
 
 /**
  * Special CustomExpression that complements very well with Conditionl Styles.
  */
 public class StatusLightCondition extends ConditionStyleExpression implements CustomExpression {
 
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
-	
-	private Double min;
-	private Double max;
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
 
-	private int mode = 0; // 0: x < min, 1: min < x < max, 2: x > max
+    private Double min;
+    private Double max;
 
-	public StatusLightCondition(Double min, Double max) {
-		this.min = min;
-		this.max = max;
+    private int mode = 0; // 0: x < min, 1: min < x < max, 2: x > max
 
-		if (min != null && max == null)
-			mode = 0;
-		else if (min != null && max != null)
-			mode = 1;
-		else if (min == null && max != null)
-			mode = 2;
-	}
+    public StatusLightCondition(Double min, Double max) {
+        this.min = min;
+        this.max = max;
 
-	public Object evaluate(Map fields, Map variables, Map parameters) {
-		Object value = getCurrentValue();
-		if (value == null)
-			return null;
+        if (min != null && max == null) {
+            mode = 0;
+        } else if (min != null && max != null) {
+            mode = 1;
+        } else if (min == null && max != null) {
+            mode = 2;
+        }
+    }
 
-		Number number = (Number)value;
+    @Override
+    public Object evaluate(Map fields, Map variables, Map parameters) {
+        Object value = getCurrentValue();
+        if (value == null) {
+            return null;
+        }
 
-		if (mode == 0){
-			return (min > number.doubleValue());
-		} else if (mode == 1) {
-			return min <= number.doubleValue() && max > number.doubleValue();
-		} else {
-			return max <= number.doubleValue();
-		}
-	}
+        Number number = (Number) value;
 
-	public String getClassName() {
-		return Boolean.class.getName();
-	}
+        if (mode == 0) {
+            return min > number.doubleValue();
+        } else if (mode == 1) {
+            return min <= number.doubleValue() && max > number.doubleValue();
+        } else {
+            return max <= number.doubleValue();
+        }
+    }
+
+    @Override
+    public String getClassName() {
+        return Boolean.class.getName();
+    }
 
 }

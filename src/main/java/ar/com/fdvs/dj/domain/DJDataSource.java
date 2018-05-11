@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,14 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
@@ -35,65 +35,67 @@ import ar.com.fdvs.dj.domain.entities.Entity;
 /**
  * Describes a data source.
  *
- * The properties {@link #dataSourceOrigin} and {@link #dataSourceType} are constants from {@link DJConstants}
+ * The properties {@link #dataSourceOrigin} and {@link #dataSourceType} are
+ * constants from {@link DJConstants}
+ * 
  * @author Juan Manuel
  *
  */
-public class DJDataSource extends DJBaseElement{
+public class DJDataSource extends DJBaseElement {
 
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
-	
-	/**
-	 * This expression must point to a JRDataSource object
-	 */
-	private String dataSourceExpression;
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
 
-	/**
-	 * Tells form where to look up the data source expression
-	 */
-	private int dataSourceOrigin = DJConstants.DATA_SOURCE_ORIGIN_PARAMETER;
+    /**
+     * This expression must point to a JRDataSource object
+     */
+    private String dataSourceExpression;
 
-	private int dataSourceType = DJConstants.DATA_SOURCE_TYPE_COLLECTION;
-	
-	private boolean preSorted = false; //for cross-tabs
+    /**
+     * Tells form where to look up the data source expression
+     */
+    private int dataSourceOrigin = DJConstants.DATA_SOURCE_ORIGIN_PARAMETER;
 
-	public DJDataSource(String dataSourceExpression, int dataSourceOrigin, int dataSourceType) {
-		super();
-		this.dataSourceExpression = dataSourceExpression;
-		this.dataSourceOrigin = dataSourceOrigin;
-		this.dataSourceType = dataSourceType;
-	}
+    private int dataSourceType = DJConstants.DATA_SOURCE_TYPE_COLLECTION;
 
-	public String getDataSourceExpression() {
-		return dataSourceExpression;
-	}
+    private boolean preSorted = false; // for cross-tabs
 
-	public void setDataSourceExpression(String dataSourceExpression) {
-		this.dataSourceExpression = dataSourceExpression;
-	}
+    public DJDataSource(String dataSourceExpression, int dataSourceOrigin, int dataSourceType) {
+        super();
+        this.dataSourceExpression = dataSourceExpression;
+        this.dataSourceOrigin = dataSourceOrigin;
+        this.dataSourceType = dataSourceType;
+    }
 
-	public int getDataSourceOrigin() {
-		return dataSourceOrigin;
-	}
+    public String getDataSourceExpression() {
+        return dataSourceExpression;
+    }
 
-	public void setDataSourceOrigin(int dataSourceOrigin) {
-		this.dataSourceOrigin = dataSourceOrigin;
-	}
+    public int getDataSourceOrigin() {
+        return dataSourceOrigin;
+    }
 
-	public int getDataSourceType() {
-		return dataSourceType;
-	}
+    public int getDataSourceType() {
+        return dataSourceType;
+    }
 
-	public void setDataSourceType(int dataSourceType) {
-		this.dataSourceType = dataSourceType;
-	}
+    public boolean isPreSorted() {
+        return preSorted;
+    }
 
-	public boolean isPreSorted() {
-		return preSorted;
-	}
+    public void setDataSourceExpression(String dataSourceExpression) {
+        this.dataSourceExpression = dataSourceExpression;
+    }
 
-	public void setPreSorted(boolean preSorted) {
-		this.preSorted = preSorted;
-	}
+    public void setDataSourceOrigin(int dataSourceOrigin) {
+        this.dataSourceOrigin = dataSourceOrigin;
+    }
+
+    public void setDataSourceType(int dataSourceType) {
+        this.dataSourceType = dataSourceType;
+    }
+
+    public void setPreSorted(boolean preSorted) {
+        this.preSorted = preSorted;
+    }
 
 }

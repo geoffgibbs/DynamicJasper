@@ -3,7 +3,7 @@
  * columns, groups, styles, etc. at runtime. It also saves a lot of development
  * time in many cases! (http://sourceforge.net/projects/dynamicjasper)
  *
- * Copyright (C) 2008  FDV Solutions (http://www.fdvsolutions.com)
+ * Copyright (C) 2008 FDV Solutions (http://www.fdvsolutions.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,27 +15,25 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
  */
 
 package ar.com.fdvs.dj.domain.chart.dataset;
 
-import ar.com.fdvs.dj.domain.DynamicJasperDesign;
-import ar.com.fdvs.dj.domain.StringExpression;
-import ar.com.fdvs.dj.domain.entities.Entity;
-import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
-import ar.com.fdvs.dj.domain.entities.columns.PropertyColumn;
-import ar.com.fdvs.dj.domain.hyperlink.LiteralExpression;
-import ar.com.fdvs.dj.util.ExpressionUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.sf.jasperreports.charts.design.JRDesignCategoryDataset;
 import net.sf.jasperreports.charts.design.JRDesignCategorySeries;
 import net.sf.jasperreports.engine.JRExpression;
@@ -44,152 +42,169 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ar.com.fdvs.dj.domain.DynamicJasperDesign;
+import ar.com.fdvs.dj.domain.StringExpression;
+import ar.com.fdvs.dj.domain.entities.Entity;
+import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
+import ar.com.fdvs.dj.domain.entities.columns.PropertyColumn;
+import ar.com.fdvs.dj.domain.hyperlink.LiteralExpression;
+import ar.com.fdvs.dj.util.ExpressionUtils;
 
 public class CategoryDataset extends AbstractDataset {
-	private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
-	
-	private PropertyColumn category = null;
-	private final List<AbstractColumn> series = new ArrayList<AbstractColumn>();
-	private final Map<AbstractColumn, StringExpression> seriesLabels = new HashMap<AbstractColumn, StringExpression>();
-	private boolean useSeriesAsCategory = false;
-		
-	/**
-	 * Sets the category column.
-	 *
-	 * @param category the category column
-	 **/
-	public void setCategory(PropertyColumn category) {
-		this.category = category;
-	}
-	
-	/**
-	 * Returns the category column.
-	 *
-	 * @return	the category column
-	 **/
-	public PropertyColumn getCategory() {
-		return category;
-	}
-	
-	/**
-	 * Adds the specified serie column to the dataset.
-	 * 
-	 * @param column the serie column
-	 **/
-	public void addSerie(AbstractColumn column) {
-		series.add(column);
-	}
+    private static final long serialVersionUID = Entity.SERIAL_VERSION_UID;
 
-	/**
-	 * Adds the specified serie column to the dataset with custom label.
-	 * 
-	 * @param column the serie column
-	 * @param label column the custom label
-	 **/
-	public void addSerie(AbstractColumn column, String label) {
-		addSerie(column, new LiteralExpression(label));
-	}
+    private PropertyColumn category = null;
+    private final List<AbstractColumn> series = new ArrayList<AbstractColumn>();
+    private final Map<AbstractColumn, StringExpression> seriesLabels = new HashMap<AbstractColumn, StringExpression>();
+    private boolean useSeriesAsCategory = false;
 
-	/**
-	 * Adds the specified serie column to the dataset with custom label expression.
-	 * 
-	 * @param column the serie column
-	 * @param labelExpression column the custom label expression
-	 **/
-	public void addSerie(AbstractColumn column, StringExpression labelExpression) {
-		series.add(column);
-		seriesLabels.put(column, labelExpression);
-	}
-	
-	/**
-	 * Removes the specified serie column from the dataset.
-	 * 
-	 * @param column the serie column	 
-	 **/
-	public void removeSerie(AbstractColumn column) {
-		series.remove(column);
-		seriesLabels.remove(column);
-	}
+    /**
+     * Adds the specified serie column to the dataset.
+     * 
+     * @param column
+     *            the serie column
+     **/
+    @Override
+    public void addSerie(AbstractColumn column) {
+        series.add(column);
+    }
 
-	/**
-	 * Removes all defined series.
-	 */
-	public void clearSeries() {
-		series.clear();
-		seriesLabels.clear();
-	}
-	
-	/**
-	 * Returns a list of all the defined series.  Every entry in the list is of type AbstractColumn.
-	 * If there are no defined series this method will return an empty list, not null. 
-	 *
-	 * @return	the list of series
-	 **/
-	public List getSeries()	{
-		return series;
-	}
-	
-	public void setUseSeriesAsCategory(boolean useSeriesAsCategory) {
-		this.useSeriesAsCategory = useSeriesAsCategory;
-	}
+    /**
+     * Adds the specified serie column to the dataset with custom label.
+     * 
+     * @param column
+     *            the serie column
+     * @param label
+     *            column the custom label
+     **/
+    public void addSerie(AbstractColumn column, String label) {
+        addSerie(column, new LiteralExpression(label));
+    }
 
-	public boolean isUseSeriesAsCategory() {
-		return useSeriesAsCategory;
-	}
-	
-	public JRDesignChartDataset transform(DynamicJasperDesign design, String name, JRDesignGroup group, JRDesignGroup parentGroup, Map vars) {
-		JRDesignCategoryDataset data = new JRDesignCategoryDataset(null);
+    /**
+     * Adds the specified serie column to the dataset with custom label expression.
+     * 
+     * @param column
+     *            the serie column
+     * @param labelExpression
+     *            column the custom label expression
+     **/
+    public void addSerie(AbstractColumn column, StringExpression labelExpression) {
+        series.add(column);
+        seriesLabels.put(column, labelExpression);
+    }
 
-		for (AbstractColumn sery : series) {
-			JRDesignCategorySeries serie = new JRDesignCategorySeries();
+    /**
+     * Removes all defined series.
+     */
+    public void clearSeries() {
+        series.clear();
+        seriesLabels.clear();
+    }
 
-			//And use it as value for each bar
-			JRDesignExpression varExp = getExpressionFromVariable((JRDesignVariable) vars.get(sery));
-			serie.setValueExpression(varExp);
+    /**
+     * Returns the category column.
+     *
+     * @return the category column
+     **/
+    public PropertyColumn getCategory() {
+        return category;
+    }
 
-			//The key for each bar
-			JRExpression exp2 = group.getExpression();
+    @Override
+    public List getColumns() {
+        return series;
+    }
 
-			JRDesignExpression exp3;
-			if (seriesLabels.containsKey(sery)) {
-				exp3 = ExpressionUtils.createAndRegisterExpression(design, "dataset_" + sery.getName() + "_" + name, seriesLabels.get(sery));
-			} else {
-				exp3 = new JRDesignExpression();
-				exp3.setText("\"" + sery.getTitle() + "\"");
-			}
-			exp3.setValueClass(String.class);
+    @Override
+    public PropertyColumn getColumnsGroup() {
+        return category;
+    }
 
-			//Here you can set subgroups of bars
-			if (useSeriesAsCategory) {
-				serie.setCategoryExpression(exp3);
+    /**
+     * Returns a list of all the defined series. Every entry in the list is of type
+     * AbstractColumn. If there are no defined series this method will return an
+     * empty list, not null.
+     *
+     * @return the list of series
+     **/
+    public List getSeries() {
+        return series;
+    }
 
-				serie.setLabelExpression(exp2);
-				serie.setSeriesExpression(exp2);
-			} else {
-				//FIXED: due to https://sourceforge.net/forum/message.php?msg_id=7396861
-				serie.setCategoryExpression(exp2);
+    public boolean isUseSeriesAsCategory() {
+        return useSeriesAsCategory;
+    }
 
-				serie.setLabelExpression(exp3);
-				serie.setSeriesExpression(exp3);
-			}
+    /**
+     * Removes the specified serie column from the dataset.
+     * 
+     * @param column
+     *            the serie column
+     **/
+    public void removeSerie(AbstractColumn column) {
+        series.remove(column);
+        seriesLabels.remove(column);
+    }
 
-			data.addCategorySeries(serie);
-		}
+    /**
+     * Sets the category column.
+     *
+     * @param category
+     *            the category column
+     **/
+    public void setCategory(PropertyColumn category) {
+        this.category = category;
+    }
 
-		setResetStyle(data, group, parentGroup);
+    public void setUseSeriesAsCategory(boolean useSeriesAsCategory) {
+        this.useSeriesAsCategory = useSeriesAsCategory;
+    }
 
-		return data;
-	}
+    @Override
+    public JRDesignChartDataset transform(DynamicJasperDesign design, String name, JRDesignGroup group,
+            JRDesignGroup parentGroup, Map vars) {
+        JRDesignCategoryDataset data = new JRDesignCategoryDataset(null);
 
-	public List getColumns() {
-		return series;
-	}
+        for (AbstractColumn sery : series) {
+            JRDesignCategorySeries serie = new JRDesignCategorySeries();
 
-	public PropertyColumn getColumnsGroup() {
-		return category;
-	}
+            // And use it as value for each bar
+            JRDesignExpression varExp = getExpressionFromVariable((JRDesignVariable) vars.get(sery));
+            serie.setValueExpression(varExp);
+
+            // The key for each bar
+            JRExpression exp2 = group.getExpression();
+
+            JRDesignExpression exp3;
+            if (seriesLabels.containsKey(sery)) {
+                exp3 = ExpressionUtils.createAndRegisterExpression(design, "dataset_" + sery.getName() + "_" + name,
+                        seriesLabels.get(sery));
+            } else {
+                exp3 = new JRDesignExpression();
+                exp3.setText("\"" + sery.getTitle() + "\"");
+            }
+            exp3.setValueClass(String.class);
+
+            // Here you can set subgroups of bars
+            if (useSeriesAsCategory) {
+                serie.setCategoryExpression(exp3);
+
+                serie.setLabelExpression(exp2);
+                serie.setSeriesExpression(exp2);
+            } else {
+                // FIXED: due to https://sourceforge.net/forum/message.php?msg_id=7396861
+                serie.setCategoryExpression(exp2);
+
+                serie.setLabelExpression(exp3);
+                serie.setSeriesExpression(exp3);
+            }
+
+            data.addCategorySeries(serie);
+        }
+
+        setResetStyle(data, group, parentGroup);
+
+        return data;
+    }
 }
