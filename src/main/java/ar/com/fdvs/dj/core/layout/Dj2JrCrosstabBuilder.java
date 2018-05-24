@@ -66,7 +66,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.CalculationEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.type.PositionTypeEnum;
-
+import ar.com.fdvs.dj.core.DJConstants;
 import ar.com.fdvs.dj.core.DJDefaultScriptlet;
 import ar.com.fdvs.dj.core.registration.EntitiesRegistrationException;
 import ar.com.fdvs.dj.domain.DJCRosstabMeasurePrecalculatedTotalProvider;
@@ -534,13 +534,63 @@ public class Dj2JrCrosstabBuilder {
          */
         createMainHeaderCell();
 
-        /*
-         * Register DATASET
-         */
-        registerDataSet(djcrosstab);
+		if (djcrosstab.getDatasource().getDataSourceOrigin() == DJConstants.DATA_SOURCE_ORIGIN_REPORT_DATASOURCE) {
+			// register just the fields
+			registerFields(djcrosstab);
+		} else {
+			/*
+			 * Register DATASET
+			 */
+			registerDataSet(djcrosstab);
+		}
 
         return jrcross;
     }
+    
+	/**
+	 * Register the fields used in the crosstab with the main datasource
+	 * 
+	 * @param djcrosstab
+	 *            the crosstab
+	 */
+	private void registerFields(DJCrosstab djcrosstab) {
+		// add fields to the main datasource
+		for (DJCrosstabRow rowGroup : djcrosstab.getRows()) {
+
+			try {
+				JRDesignField field = new JRDesignField();
+				field.setName(rowGroup.getProperty().getProperty());
+				field.setValueClassName(rowGroup.getProperty().getValueClassName());
+				design.addField(field);
+			} catch (JRException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+
+		for (DJCrosstabColumn colGroup : djcrosstab.getColumns()) {
+
+			try {
+				JRDesignField field = new JRDesignField();
+				field.setName(colGroup.getProperty().getProperty());
+				field.setValueClassName(colGroup.getProperty().getValueClassName());
+				design.addField(field);
+			} catch (JRException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+
+		for (DJCrosstabMeasure measure : djcrosstab.getMeasures()) {
+
+			try {
+				JRDesignField field = new JRDesignField();
+				field.setName(measure.getProperty().getProperty());
+				field.setValueClassName(measure.getProperty().getValueClassName());
+				design.addField(field);
+			} catch (JRException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
 
     private void createMainHeaderCell() {
         JRDesignCellContents contents = new JRDesignCellContents();
