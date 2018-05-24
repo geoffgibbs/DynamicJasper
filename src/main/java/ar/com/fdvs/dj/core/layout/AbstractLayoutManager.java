@@ -51,46 +51,16 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import net.sf.jasperreports.charts.design.JRDesignBarPlot;
-import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.JRTextElement;
-import net.sf.jasperreports.engine.base.JRBaseChartPlot;
-import net.sf.jasperreports.engine.design.JRDesignBand;
-import net.sf.jasperreports.engine.design.JRDesignChart;
-import net.sf.jasperreports.engine.design.JRDesignChartDataset;
-import net.sf.jasperreports.engine.design.JRDesignConditionalStyle;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JRDesignGraphicElement;
-import net.sf.jasperreports.engine.design.JRDesignGroup;
-import net.sf.jasperreports.engine.design.JRDesignImage;
-import net.sf.jasperreports.engine.design.JRDesignSection;
-import net.sf.jasperreports.engine.design.JRDesignStyle;
-import net.sf.jasperreports.engine.design.JRDesignTextElement;
-import net.sf.jasperreports.engine.design.JRDesignTextField;
-import net.sf.jasperreports.engine.design.JRDesignVariable;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.CalculationEnum;
-import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
-import net.sf.jasperreports.engine.type.ModeEnum;
-import net.sf.jasperreports.engine.type.OnErrorTypeEnum;
-import net.sf.jasperreports.engine.type.PositionTypeEnum;
-import net.sf.jasperreports.engine.type.ResetTypeEnum;
-import net.sf.jasperreports.engine.type.ScaleImageEnum;
-import net.sf.jasperreports.engine.type.StretchTypeEnum;
-import net.sf.jasperreports.engine.util.JRExpressionUtil;
-
 import ar.com.fdvs.dj.core.DJException;
 import ar.com.fdvs.dj.domain.DJChart;
 import ar.com.fdvs.dj.domain.DJChartOptions;
+import ar.com.fdvs.dj.domain.DJCrosstab;
 import ar.com.fdvs.dj.domain.DJWaterMark;
 import ar.com.fdvs.dj.domain.DynamicJasperDesign;
 import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.DataSetFactory;
+import ar.com.fdvs.dj.domain.constants.Border;
 import ar.com.fdvs.dj.domain.constants.Transparency;
 import ar.com.fdvs.dj.domain.entities.DJColSpan;
 import ar.com.fdvs.dj.domain.entities.DJGroup;
@@ -106,6 +76,39 @@ import ar.com.fdvs.dj.util.HyperLinkUtil;
 import ar.com.fdvs.dj.util.LayoutUtils;
 import ar.com.fdvs.dj.util.Utils;
 import ar.com.fdvs.dj.util.WaterMarkRenderer;
+import net.sf.jasperreports.charts.design.JRDesignBarPlot;
+import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.JRTextElement;
+import net.sf.jasperreports.engine.base.JRBaseChartPlot;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignChart;
+import net.sf.jasperreports.engine.design.JRDesignChartDataset;
+import net.sf.jasperreports.engine.design.JRDesignConditionalStyle;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignGraphicElement;
+import net.sf.jasperreports.engine.design.JRDesignGroup;
+import net.sf.jasperreports.engine.design.JRDesignImage;
+import net.sf.jasperreports.engine.design.JRDesignRectangle;
+import net.sf.jasperreports.engine.design.JRDesignSection;
+import net.sf.jasperreports.engine.design.JRDesignStyle;
+import net.sf.jasperreports.engine.design.JRDesignTextElement;
+import net.sf.jasperreports.engine.design.JRDesignTextField;
+import net.sf.jasperreports.engine.design.JRDesignVariable;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.CalculationEnum;
+import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
+import net.sf.jasperreports.engine.type.ModeEnum;
+import net.sf.jasperreports.engine.type.OnErrorTypeEnum;
+import net.sf.jasperreports.engine.type.PositionTypeEnum;
+import net.sf.jasperreports.engine.type.ResetTypeEnum;
+import net.sf.jasperreports.engine.type.ScaleImageEnum;
+import net.sf.jasperreports.engine.type.StretchTypeEnum;
+import net.sf.jasperreports.engine.util.JRExpressionUtil;
 
 /**
  * Abstract Class used as base for the different Layout Managers.</br>
@@ -190,6 +193,7 @@ public abstract class AbstractLayoutManager implements LayoutManager {
             startLayout();
             applyWaterMark();
             transformDetailBand();
+            setSummaryBand();
             endLayout();
             setWhenNoDataBand();
             setBandsFinalHeight();
@@ -198,6 +202,48 @@ public abstract class AbstractLayoutManager implements LayoutManager {
             throw new LayoutException(e.getMessage(), e);
         }
     }
+    
+    protected void setSummaryBand() {
+    	JRDesignBand summary = (JRDesignBand) getDesign().getSummary();
+    	// only support crosstab in summary so far
+    	for (DJCrosstab djcross : getReport().getSummaryCrosstabs() ) {
+	    	
+	    	
+	    	Dj2JrCrosstabBuilder djcb = new Dj2JrCrosstabBuilder();
+	
+			JRDesignCrosstab crosst = djcb.createCrosstab(djcross, this);
+			
+			int yOffset = LayoutUtils.findVerticalOffset(summary);
+			if (djcross.getTopSpace() != 0) {
+				JRDesignRectangle rect = createBlankRectableCrosstab(djcross.getBottomSpace(), yOffset);
+				rect.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+				summary.addElement(rect);
+				crosst.setY(yOffset + djcross.getBottomSpace());
+			}
+	
+			summary.addElement(crosst);
+	
+			if (djcross.getBottomSpace() != 0) {
+				JRDesignRectangle rect = createBlankRectableCrosstab(djcross.getBottomSpace(), crosst.getY() + crosst.getHeight());
+				summary.addElement(rect);
+			}
+    	}
+    }
+    
+    protected JRDesignRectangle createBlankRectableCrosstab(int amount,int yOffset) {
+		JRDesignRectangle rect = new JRDesignRectangle();
+
+        LayoutUtils.convertBorderToPen(Border.NO_BORDER(), rect.getLinePen());
+
+		rect.setMode(ModeEnum.getByValue( Transparency.TRANSPARENT.getValue()) );
+//		rect.setMode(Transparency.OPAQUE.getValue());
+//		rect.setBackcolor(Color.RED);
+		rect.setWidth(getReport().getOptions().getPrintableWidth());
+		rect.setHeight(amount);
+		rect.setY(yOffset);
+		rect.setPositionType( PositionTypeEnum.FLOAT );
+		return rect;
+	}
 
     /**
      * Given a dj-Style, it is applied to the jasper element. If the style is being

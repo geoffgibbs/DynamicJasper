@@ -651,6 +651,11 @@ public class FastReportBuilder extends DynamicReportBuilder {
         super.addVariable(var);
         return this;
     }
+    
+    public FastReportBuilder addSummaryCrosstab(DJCrosstab djcross) {
+		report.addSummaryCrosstab(djcross);
+		return this;
+	}
 
     /**
      * 
