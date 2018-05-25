@@ -64,6 +64,8 @@ public class DJCrosstabMeasure extends DJBaseElement {
     private Style style;
 
     private DJHyperLink link;
+    
+    private String incrementerFactoryClassName;
 
     public DJCrosstabMeasure() {
         super();
@@ -220,4 +222,12 @@ public class DJCrosstabMeasure extends DJBaseElement {
     public void setVisible(Boolean visible) {
         this.visible = visible;
     }
+    
+	public void setIncrementerFactoryClassName(String factoryClassName) {
+		incrementerFactoryClassName = factoryClassName;
+	}
+	
+	public String getIncrementerFactoryClassName() {
+		return incrementerFactoryClassName;
+	}
 }
