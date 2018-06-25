@@ -31,6 +31,8 @@ package ar.com.fdvs.dj.test;
 
 import java.awt.Color;
 
+import org.junit.Ignore;
+
 import net.sf.jasperreports.view.JasperViewer;
 
 import ar.com.fdvs.dj.domain.DynamicReport;
@@ -43,6 +45,7 @@ import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.Transparency;
 import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
 
+@Ignore("Font used not available...")
 public class TemplateFileWithFieldsReportTest extends BaseDjReportTest {
 
     public static void main(String[] args) throws Exception {

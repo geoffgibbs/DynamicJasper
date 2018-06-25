@@ -31,6 +31,8 @@ package ar.com.fdvs.dj.test;
 
 import java.util.Date;
 
+import org.junit.Ignore;
+
 import net.sf.jasperreports.view.JasperViewer;
 
 import ar.com.fdvs.dj.domain.DynamicReport;
@@ -39,6 +41,7 @@ import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
 import ar.com.fdvs.dj.domain.builders.StyleBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 
+@Ignore("Font used not available...")
 public class FontReportTest extends BaseDjReportTest {
 
     public static void main(String[] args) throws Exception {
