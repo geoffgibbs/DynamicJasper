@@ -112,7 +112,7 @@ public class CrosstabReportTest7 extends BaseDjReportTest {
                 .setColumnStyles(colHeaderStyle, totalStyle, totalHeaderStyle).setCellDimension(34, 60)
                 .setColumnHeaderHeight(30).setRowHeaderWidth(80).build();
 
-        drb.addHeaderCrosstab(djcross); // add the crosstab in the header band of the report
+        drb.addFooterCrosstab(djcross); // add the crosstab in the header band of the report
 
         DynamicReport dr = drb.build();
 
